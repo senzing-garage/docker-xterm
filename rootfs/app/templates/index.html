@@ -7,30 +7,21 @@ html {
   font-family: arial;
 }
 </style>
-<link rel="icon"
-    href="{{ url_for('static', filename='static/img/favicon.ico') }}">
-<link rel="stylesheet"
-    href="{{ url_for('static', filename='static/css/lib/xterm.css') }}" />
+<link rel="icon" href="{{ url_for('static', filename='static/img/favicon.ico') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='static/css/lib/xterm.css') }}" />
 </head>
 
 <body>
     <div style="width: 100%; height: calc(100% - 50px);" id="terminal"></div>
     <span style="font-size: 1.4em;">Sen</span><span style="font-size: 1.4em; color: red;">z</span><span style="font-size: 1.4em;">ing</span>
     <span style="font-size: 1.4em;">xterm</span>&nbsp;&nbsp;&nbsp;
-    <span style="font-size: small;">status: <span
-        style="font-size: small;" id="status">connecting...</span></span>
-    <script
-        src="{{ url_for('static', filename='static/js/lib/xterm.js') }}"></script>
-    <script
-        src="{{ url_for('static', filename='static/js/lib/addons/fit/fit.js') }}"></script>
-    <script
-        src="{{ url_for('static', filename='static/js/lib/addons/fullscreen/fullscreen.js') }}"></script>
-    <script
-        src="{{ url_for('static', filename='static/js/lib/addons/search/search.js') }}"></script>
-    <script
-        src="{{ url_for('static', filename='static/js/lib/addons/webLinks/webLinks.js') }}"></script>
-    <script
-        src="{{ url_for('static', filename='static/js/lib/socket.io/2.1.1/socket.io.js') }}"></script>
+    <span style="font-size: small; float:right">Status: <span style="font-size: small;" id="status">connecting...</span></span>
+    <script src="{{ url_for('static', filename='static/js/lib/xterm.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/addons/fit/fit.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/addons/fullscreen/fullscreen.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/addons/search/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/addons/webLinks/webLinks.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/socket.io/2.1.1/socket.io.js') }}"></script>
 
     <script>
 
