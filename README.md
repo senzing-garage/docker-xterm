@@ -1,4 +1,4 @@
-# template-python
+# docker-xterm
 
 ## Preamble
 
@@ -9,88 +9,15 @@ For the most part, instructions are copy and paste.
 Whenever thinking is needed, it's marked with a "thinking" icon :thinking:.
 Whenever customization is needed, it's marked with a "pencil" icon :pencil2:.
 If the instructions are not clear, please let us know by opening a new
-[Documentation issue](https://github.com/Senzing/template-python/issues/new?template=documentation_request.md)
+[Documentation issue](https://github.com/Senzing/docker-xterm/issues/new?template=documentation_request.md)
 describing where we can improve.   Now on with the show...
 
 ## Overview
-
-:arrow_down:
-:arrow_down:
-:arrow_down:
-:arrow_down:
-:arrow_down:
-:arrow_down:
-:arrow_down:
-:arrow_down:
-:arrow_down:
-:arrow_down:
-
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-
-:warning: This section should be replaced with real "**Overview**" content after initial repository creation. :warning:
-
-This repository contains exemplar python scripts that can be used to start a new python project.
-
-The
-[template-python.py](template-python.py)
-python script is a boilerplate which has the following features:
-
-1. Conforms to
-   [PEP-0008](https://github.com/Senzing/knowledge-base/blob/master/WHATIS/pep-0008.md)
-   python programming style guide.
-    1. With exception of some lines being too long.
-1. "command subcommand" command line.
-1. A structured command line parser and "-help"
-1. Configuration via:
-    1. Command line options
-    1. Environment variables
-    1. Configuration file
-    1. Default
-1. Messages dictionary
-1. Logging and Log Level support.
-1. Entry / Exit log messages.
-1. Docker support.
-
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-:warning:
-
-:arrow_up:
-:arrow_up:
-:arrow_up:
-:arrow_up:
-:arrow_up:
-:arrow_up:
-:arrow_up:
-:arrow_up:
-:arrow_up:
-:arrow_up:
 
 ### Contents
 
 1. [Related artifacts](#related-artifacts)
 1. [Expectations](#expectations)
-1. [Demonstrate using Command Line Interface](#demonstrate-using-command-line-interface)
-    1. [Prerequisites for CLI](#prerequisites-for-cli)
-    1. [Download](#download)
-    1. [Environment variables for CLI](#environment-variables-for-cli)
-    1. [Run command](#run-command)
 1. [Demonstrate using Docker](#demonstrate-using-docker)
     1. [Prerequisites for Docker](#prerequisites-for-docker)
     1. [Docker volumes](#docker-volumes)
@@ -121,126 +48,15 @@ python script is a boilerplate which has the following features:
 
 ## Related artifacts
 
-1. [DockerHub](https://hub.docker.com/r/senzing/xxxxxxxx)
-1. [Helm Chart](https://github.com/Senzing/charts/tree/master/charts/xxxxxxxx)
+1. [DockerHub](https://hub.docker.com/r/senzing/xterm)
+1. [Helm Chart](https://github.com/Senzing/charts/tree/master/charts/xterm)
 
 ## Expectations
 
 - **Space:** This repository and demonstration require 6 GB free disk space.
-- **Time:** Budget 40 minutes to get the demonstration up-and-running, depending on CPU and network speeds.
+- **Time:** Budget 20 minutes to get the demonstration up-and-running, depending on CPU and network speeds.
 - **Background knowledge:** This repository assumes a working knowledge of:
   - [Docker](https://github.com/Senzing/knowledge-base/blob/master/WHATIS/docker.md)
-
-## Demonstrate using Command Line Interface
-
-### Prerequisites for CLI
-
-:thinking: The following tasks need to be complete before proceeding.
-These are "one-time tasks" which may already have been completed.
-
-1. Install system dependencies:
-    1. Use `apt` based installation for Debian, Ubuntu and
-       [others](https://en.wikipedia.org/wiki/List_of_Linux_distributions#Debian-based)
-        1. See [apt-packages.txt](src/apt-packages.txt) for list
-    1. Use `yum` based installation for Red Hat, CentOS, openSuse and
-       [others](https://en.wikipedia.org/wiki/List_of_Linux_distributions#RPM-based).
-        1. See [yum-packages.txt](src/yum-packages.txt) for list
-1. Install Python dependencies:
-    1. See [requirements.txt](requirements.txt) for list
-        1. [Installation hints](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-python-dependencies.md)
-1. The following software programs need to be installed:
-    1. [senzingapi](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/install-senzing-api.md)
-1. :thinking: **Optional:**  Some databases need additional support.
-   For other databases, this step may be skipped.
-    1. **Db2:** See
-       [Support Db2](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/support-db2.md).
-    1. **MS SQL:** See
-       [Support MS SQL](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/support-mssql.md).
-1. [Configure Senzing database](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/configure-senzing-database.md)
-1. [Configure Senzing](https://github.com/Senzing/knowledge-base/blob/master/HOWTO/configure-senzing.md)
-
-### Download
-
-1. Get a local copy of
-   [template-python.py](template-python.py).
-   Example:
-
-    1. :pencil2: Specify where to download file.
-       Example:
-
-        ```console
-        export SENZING_DOWNLOAD_FILE=~/template-python.py
-        ```
-
-    1. Download file.
-       Example:
-
-        ```console
-        curl -X GET \
-          --output ${SENZING_DOWNLOAD_FILE} \
-          https://raw.githubusercontent.com/Senzing/template-python/master/template-python.py
-        ```
-
-    1. Make file executable.
-       Example:
-
-        ```console
-        chmod +x ${SENZING_DOWNLOAD_FILE}
-        ```
-
-1. :thinking: **Alternative:** The entire git repository can be downloaded by following instructions at
-   [Clone repository](#clone-repository)
-
-### Environment variables for CLI
-
-1. :pencil2: Identify the Senzing `g2` directory.
-   Example:
-
-    ```console
-    export SENZING_G2_DIR=/opt/senzing/g2
-    ```
-
-    1. Here's a simple test to see if `SENZING_G2_DIR` is correct.
-       The following command should return file contents.
-       Example:
-
-        ```console
-        cat ${SENZING_G2_DIR}/g2BuildVersion.json
-        ```
-
-1. Set common environment variables
-   Example:
-
-    ```console
-    export PYTHONPATH=${SENZING_G2_DIR}/python
-    ```
-
-1. :thinking: Set operating system specific environment variables.
-   Choose one of the options.
-    1. **Option #1:** For Debian, Ubuntu, and [others](https://en.wikipedia.org/wiki/List_of_Linux_distributions#Debian-based).
-       Example:
-
-        ```console
-        export LD_LIBRARY_PATH=${SENZING_G2_DIR}/lib:${SENZING_G2_DIR}/lib/debian:$LD_LIBRARY_PATH
-        ```
-
-    1. **Option #2** For Red Hat, CentOS, openSuse and [others](https://en.wikipedia.org/wiki/List_of_Linux_distributions#RPM-based).
-       Example:
-
-        ```console
-        export LD_LIBRARY_PATH=${SENZING_G2_DIR}/lib:$LD_LIBRARY_PATH
-        ```
-
-### Run command
-
-1. Run the command.
-   Example:
-
-   ```console
-   ${SENZING_DOWNLOAD_FILE} --help
-   ```
-
-1. For more examples of use, see [Examples of CLI](#examples-of-cli).
 
 ## Demonstrate using Docker
 
@@ -420,7 +236,7 @@ Unset `*_PARAMETER` environment variables have no effect on the
       ${SENZING_OPT_IBM_DIR_PARAMETER} \
       ${SENZING_OPT_MICROSOFT_DIR_PARAMETER} \
       ${SENZING_RUNAS_USER_PARAMETER} \
-      senzing/template
+      senzing/xterm
     ```
 
 1. For more examples of use, see [Examples of Docker](#examples-of-docker).
@@ -448,7 +264,7 @@ see [Environment Variables](https://github.com/Senzing/knowledge-base/blob/maste
 
     ```console
     export GIT_ACCOUNT=senzing
-    export GIT_REPOSITORY=template-docker
+    export GIT_REPOSITORY=docker-xterm
     export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
     export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
     ```
@@ -461,15 +277,15 @@ see [Environment Variables](https://github.com/Senzing/knowledge-base/blob/maste
 
     ```console
     sudo docker build \
-      --tag senzing/template \
-      https://github.com/senzing/template-docker.git
+      --tag senzing/xterm \
+      https://github.com/senzing/docker-xterm.git
     ```
 
 1. **Option #2:** Using `docker` command and local repository.
 
     ```console
     cd ${GIT_REPOSITORY_DIR}
-    sudo docker build --tag senzing/template .
+    sudo docker build --tag senzing/xterm .
     ```
 
 1. **Option #3:** Using `make` command.
@@ -484,9 +300,6 @@ see [Environment Variables](https://github.com/Senzing/knowledge-base/blob/maste
 ## Examples
 
 ### Examples of CLI
-
-The following examples require initialization described in
-[Demonstrate using Command Line Interface](#demonstrate-using-command-line-interface).
 
 ### Examples of Docker
 
