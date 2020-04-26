@@ -71,9 +71,9 @@ RUN echo " PS1='$ '" >> /etc/bash.bashrc
 
 USER 1001
 
-ENV PATH=${PATH}:/opt/senzing/g2/python
-
 # Set environment variables.
+
+ENV PATH=${PATH}:/opt/senzing/g2/python
 
 # Runtime execution.
 

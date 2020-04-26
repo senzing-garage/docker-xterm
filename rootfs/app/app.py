@@ -11,108 +11,170 @@ import struct
 import fcntl
 import shlex
 
-__version__ = "0.4.0.1"
+__all__ = []
+__version__ = "1.0.0"  # See https://www.python.org/dev/peps/pep-0396/
+__date__ = '2020-04-26'
+__updated__ = '2020-04-26'
 
 app = Flask(__name__, static_folder=".", static_url_path="")
 app.config["SECRET_KEY"] = "secret!"
-app.config["fd"] = None
+app.config["file_descriptor"] = None
 app.config["child_pid"] = None
 socketio = SocketIO(app)
 
 
-def set_winsize(fd, row, col, xpix=0, ypix=0):
+def set_window_size(file_descriptor, row, col, xpix=0, ypix=0):
+    """
+    Set the window size.
+    """
+
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
-    fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
+    fcntl.ioctl(file_descriptor, termios.TIOCSWINSZ, winsize)
 
 
-def read_and_forward_pty_output():
+def read_os_write_socketio():
+    """
+    Read from file descriptor and send to pseudo-terminal.
+    """
+
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
-        if app.config["fd"]:
+        if app.config["file_descriptor"]:
             timeout_sec = 0
-            (data_ready, _, _) = select.select([app.config["fd"]], [], [], timeout_sec)
+            (data_ready, _, _) = select.select([app.config["file_descriptor"]], [], [], timeout_sec)
             if data_ready:
-                output = os.read(app.config["fd"], max_read_bytes).decode()
+                output = os.read(app.config["file_descriptor"], max_read_bytes).decode()
                 socketio.emit("pty-output", {"output": output}, namespace="/pty")
 
+# -----------------------------------------------------------------------------
+# Flask
+# -----------------------------------------------------------------------------
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+# -----------------------------------------------------------------------------
+# socketio
+# -----------------------------------------------------------------------------
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
-    """write to the child pty. The pty sees this as if you are typing in a real
-    terminal.
     """
-    if app.config["fd"]:
-        os.write(app.config["fd"], data["input"].encode())
+    Write to the pseudo-terminal.
+    """
+
+    if app.config["file_descriptor"]:
+        os.write(app.config["file_descriptor"], data["input"].encode())
 
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
-    if app.config["fd"]:
-        set_winsize(app.config["fd"], data["rows"], data["cols"])
+    """
+    Account for window resize.
+    """
+
+    if app.config["file_descriptor"]:
+        set_window_size(app.config["file_descriptor"], data["rows"], data["cols"])
 
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-    """new client connected"""
+    """
+    New client connection.
+    """
+
+    # If child process already running, don't start a new one.
 
     if app.config["child_pid"]:
-        # already started child process, don't start another
         return
 
-    # create child process attached to a pty we can read from and write to
-    (child_pid, fd) = pty.fork()
+    # Start a new Pseudo Terminal (PTY) to communicate with.
+
+    (child_pid, file_descriptor) = pty.fork()
+
+    # If child process, all output sent to the pseudo-terminal.
+
     if child_pid == 0:
-        # this is the child process fork.
-        # anything printed here will show up in the pty, including the output
-        # of this subprocess
         subprocess.run(app.config["cmd"])
+
+    # If parent process,
+
     else:
-        # this is the parent process fork.
-        # store child fd and pid
-        app.config["fd"] = fd
+        app.config["file_descriptor"] = file_descriptor
         app.config["child_pid"] = child_pid
-        set_winsize(fd, 50, 50)
-        cmd = " ".join(shlex.quote(c) for c in app.config["cmd"])
-        print("child pid is", child_pid)
-        print(
-            f"starting background task with command `{cmd}` to continously read "
-            "and forward pty output to client"
-        )
-        socketio.start_background_task(target=read_and_forward_pty_output)
-        print("task started")
+        set_window_size(file_descriptor, 50, 50)
+        cmd = " ".join(shlex.quote(cmd_arg) for cmd_arg in app.config["cmd"])
+        socketio.start_background_task(target=read_os_write_socketio)
+        print("Started background task with pid: {0} command: {1}".format(child_pid, cmd))
+
+# -----------------------------------------------------------------------------
+# Define argument parser
+# -----------------------------------------------------------------------------
 
 
-def main():
+def get_parser():
+    ''' Parse commandline arguments. '''
+
+    arguments = {
+        "--cmd-args": {
+            "default": "",
+            "dest": "cmd_args",
+            "metavar": "SENZING_COMMAND_ARGS",
+            "help": "Command line arguments. Default: None"
+        },
+        "--command": {
+            "default": "bash",
+            "dest": "command",
+            "metavar": "SENZING_COMMAND",
+            "help": "Command to run in terminal. Default: None"
+        },
+        "--debug": {
+            "dest": "debug",
+            "action": "store_true",
+            "help": "Enable debugging. Default: False"
+        },
+        "--host": {
+            "default": "0.0.0.0",
+            "dest": "host",
+            "metavar": "SENZING_HOST",
+            "help": "Server listens to this host. Default: 0.0.0.0"
+        },
+        "--port": {
+            "default": 5000,
+            "dest": "port",
+            "metavar": "SENZING_PORT",
+            "help": "Server listens on this port. Default: 5000"
+        },
+    }
+
     parser = argparse.ArgumentParser(
-        description=(
-            "X-term in a browser. "
-        ),
+        prog="xterm",
+        description="Web-based X-terminal. For more information, see https://github.com/Senzing/docker-xterm",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("-p", "--port", default=5000, help="port to run server on")
-    parser.add_argument("--debug", action="store_true", help="debug the server")
-    parser.add_argument("--version", action="store_true", help="print version and exit")
-    parser.add_argument(
-        "--command", default="bash", help="Command to run in the terminal"
-    )
-    parser.add_argument(
-        "--cmd-args",
-        default="",
-        help="arguments to pass to command (i.e. --cmd-args='arg1 arg2 --flag')",
-    )
-    args = parser.parse_args()
-    if args.version:
-        print(__version__)
-        exit(0)
-    print(f"serving on http://127.0.0.1:{args.port}")
+
+    for argument_key, argument_values in arguments.items():
+        parser.add_argument(argument_key, **argument_values)
+
+    return parser
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+
+def main():
+
+    # Parse input.
+
+    args = get_parser().parse_args()
+    print("Senzing X-term serving on http://{0}:{1}".format(args.host, args.port))
+
+    # Start listening.
+
     app.config["cmd"] = [args.command] + shlex.split(args.cmd_args)
-    socketio.run(app, debug=args.debug, port=args.port, host="0.0.0.0")
+    socketio.run(app, debug=args.debug, port=args.port, host=args.host)
 
 
 if __name__ == "__main__":
