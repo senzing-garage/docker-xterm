@@ -38,6 +38,7 @@ RUN pip3 install --upgrade pip \
  && pip3 install \
       click==7.0 \
       csvkit \
+      eventlet \
       flask-socketio==3.3.1 \
       flask==1.0.2 \
       fuzzywuzzy \

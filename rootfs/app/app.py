@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import argparse
 from flask import Flask, render_template
 from flask_socketio import SocketIO
@@ -15,6 +16,8 @@ __all__ = []
 __version__ = "1.0.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
 __updated__ = '2020-04-26'
+
+# Initialize Flask instance and SocketIO instance.
 
 app = Flask(__name__, static_folder=".", static_url_path="")
 app.config["SECRET_KEY"] = "secret!"
@@ -51,6 +54,7 @@ def read_os_write_socketio():
 # Flask
 # -----------------------------------------------------------------------------
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -58,6 +62,7 @@ def index():
 # -----------------------------------------------------------------------------
 # socketio
 # -----------------------------------------------------------------------------
+
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
@@ -107,7 +112,7 @@ def connect():
         set_window_size(file_descriptor, 50, 50)
         cmd = " ".join(shlex.quote(cmd_arg) for cmd_arg in app.config["cmd"])
         socketio.start_background_task(target=read_os_write_socketio)
-        print("Started background task with pid: {0} command: {1}".format(child_pid, cmd))
+        print("Started background task (pid: {0}) running command: '{1}'".format(child_pid, cmd))
 
 # -----------------------------------------------------------------------------
 # Define argument parser
@@ -164,15 +169,16 @@ def get_parser():
 # Main
 # -----------------------------------------------------------------------------
 
+
 def main():
 
     # Parse input.
 
     args = get_parser().parse_args()
-    print("Senzing X-term serving on http://{0}:{1}".format(args.host, args.port))
 
     # Start listening.
 
+    print("Senzing X-term serving on http://{0}:{1}".format(args.host, args.port))
     app.config["cmd"] = [args.command] + shlex.split(args.cmd_args)
     socketio.run(app, debug=args.debug, port=args.port, host=args.host)
 
