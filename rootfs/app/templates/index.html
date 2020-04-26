@@ -1,0 +1,101 @@
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>xterm</title>
+<style>
+html {
+  font-family: arial;
+}
+</style>
+<link rel="icon" href="{{ url_for('static', filename='static/img/favicon.ico') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='static/css/lib/xterm.css') }}" />
+</head>
+
+<body>
+    <div style="width: 100%; height: calc(100% - 50px);" id="terminal"></div>
+    <span style="font-size: 1.4em;">Sen</span><span style="font-size: 1.4em; color: red;">z</span><span style="font-size: 1.4em;">ing</span>
+    <span style="font-size: 1.4em;">xterm</span>&nbsp;&nbsp;&nbsp;
+    <span style="font-size: small; float:right">Status: <span style="font-size: small;" id="status">connecting...</span></span>
+    <script src="{{ url_for('static', filename='static/js/lib/xterm.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/addons/fit/fit.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/addons/fullscreen/fullscreen.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/addons/search/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/addons/webLinks/webLinks.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/lib/socket.io/2.1.1/socket.io.js') }}"></script>
+
+    <script>
+
+    // Create terminal instance.
+
+    Terminal.applyAddon(fullscreen)
+    Terminal.applyAddon(fit)
+    Terminal.applyAddon(webLinks)
+    Terminal.applyAddon(search)
+    const term = new Terminal({
+          cursorBlink: true,
+          macOptionIsMeta: true,
+          scrollback: 10000,
+    });
+
+    // Configure terminal.
+
+    term.open(document.getElementById('terminal'));
+    term.fit()
+    term.resize(15, 50)
+    console.log(`size: ${term.cols} columns, ${term.rows} rows`)
+    term.fit()
+    term.write("\nWelcome to Senzing xterm!\n")
+
+    // Traffic from xterm to host.
+
+    term.on('data', function(data) {
+      console.log("input", data)
+      socket.emit("pty-input", {"input": data})
+    })
+
+    // Traffic from host to xterm.
+
+    const socket = io.connect('/pty');
+    socket.emit("pty-input", {"input": "\n"})
+
+    socket.on("pty-output", function(data){
+      console.log("output", data)
+      term.write(data.output)
+    })
+
+    // Status.
+
+    const status = document.getElementById("status")
+
+    socket.on("connect", () => {
+      fitToscreen()
+      status.innerHTML = '<span style="background-color: lightgreen;">connected</span>'
+    })
+
+    socket.on("disconnect", () => {
+      status.innerHTML = '<span style="background-color: #ff8383;">disconnected</span>'
+    })
+
+    // Window resizing.
+
+    function fitToscreen(){
+      term.fit()
+      socket.emit("resize", {"cols": term.cols, "rows": term.rows})
+    }
+
+    function debounce(func, wait_ms) {
+      let timeout
+      return function(...args) {
+        const context = this
+        clearTimeout(timeout)
+        timeout = setTimeout(() => func.apply(context, args), wait_ms)
+      }
+    }
+
+    const wait_ms = 50;
+    window.onresize = debounce(fitToscreen, wait_ms)
+
+  </script>
+
+</body>
+</html>
