@@ -78,5 +78,5 @@ ENV PATH=${PATH}:/opt/senzing/g2/python
 
 # Runtime execution.
 
-WORKDIR /app
+WORKDIR /
 CMD ["/app/xterm.py"]
