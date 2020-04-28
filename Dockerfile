@@ -74,7 +74,9 @@ USER 1001
 
 # Set environment variables.
 
-ENV PATH=${PATH}:/opt/senzing/g2/python
+ENV PATH=${PATH}:/opt/senzing/g2/python:/opt/senzing/g2/extras/poc
+ENV ODBCSYSINI=/etc/opt/senzing
+ENV SENZING_CONFIG_FILE=/etc/opt/senzing/G2Module.ini
 
 # Runtime execution.
 
