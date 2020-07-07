@@ -1,11 +1,11 @@
-ARG BASE_IMAGE=senzing/senzing-base:1.4.0
+ARG BASE_IMAGE=senzing/senzing-base:1.5.1
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2020-04-26
+ENV REFRESHED_AT=2020-07-07
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.0.0"
+      Version="1.0.3"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -17,16 +17,21 @@ USER root
 
 RUN apt-get update \
  && apt-get -y install \
+    elfutils \
     fio \
     htop \
     iotop \
     ipython \
     itop \
     less \
-    odbc-postgresql \
     net-tools \
+    odbc-postgresql \
+    procps \
     pstack \
     python-pyodbc \
+    python-setuptools \
+    strace \
+    tree \
     unixodbc \
     unixodbc-dev \
     vim \
@@ -49,8 +54,8 @@ RUN pip3 install --upgrade pip \
       ptable \
       pyodbc \
       pysnooper \
-      python-levenshtein \
       python-engineio==3.4.3 \
+      python-levenshtein \
       python-socketio==3.1.2 \
       setuptools \
       six==1.12.0 \
@@ -71,12 +76,6 @@ RUN echo " PS1='$ '" >> /etc/bash.bashrc
 # Make non-root container.
 
 USER 1001
-
-# Set environment variables.
-
-ENV PATH=${PATH}:/opt/senzing/g2/python:/opt/senzing/g2/extras/poc
-ENV ODBCSYSINI=/etc/opt/senzing
-ENV SENZING_CONFIG_FILE=/etc/opt/senzing/G2Module.ini
 
 # Runtime execution.
 
