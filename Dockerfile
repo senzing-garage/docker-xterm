@@ -54,6 +54,7 @@ RUN pip3 install --upgrade pip \
       ptable \
       pyodbc \
       pysnooper \
+      psycopbg2 \
       python-engineio==3.4.3 \
       python-levenshtein \
       python-socketio==3.1.2 \
