@@ -1,7 +1,7 @@
-ARG BASE_IMAGE=senzing/senzing-base:1.5.1
+ARG BASE_IMAGE=senzing/senzing-base:1.5.5
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2020-07-07
+ENV REFRESHED_AT=2020-02-04
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
@@ -24,10 +24,12 @@ RUN apt-get update \
     ipython \
     itop \
     less \
+    libpq-dev \
     net-tools \
     odbc-postgresql \
     procps \
     pstack \
+    python-dev \
     python-pyodbc \
     python-setuptools \
     strace \
@@ -60,8 +62,7 @@ RUN pip3 install --upgrade pip \
       python-socketio==3.1.2 \
       setuptools \
       six==1.12.0 \
-      werkzeug==0.14.1 \
-      psycopg2-binary
+      werkzeug==0.14.1
 
 # The port for the Flask is 5000.
 
