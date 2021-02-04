@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed in 1.0.5
 
+- Update to senzing/senzing-base:1.5.5
 - Removed `psycopg2-binary`
 - Added `libpq-dev` and `python-dev` packages.
 
