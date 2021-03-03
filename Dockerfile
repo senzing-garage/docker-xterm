@@ -55,10 +55,10 @@ RUN pip3 install --upgrade pip \
       jinja2==2.10 \
       markupsafe==1.1.1 \
       pandas \
+      psycopg2 \
       ptable \
       pyodbc \
       pysnooper \
-      psycopg2 \
       python-engineio==3.4.3 \
       python-levenshtein \
       python-socketio==3.1.2 \
