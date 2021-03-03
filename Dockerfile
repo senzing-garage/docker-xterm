@@ -21,7 +21,7 @@ RUN apt-get update \
     fio \
     htop \
     iotop \
-    ipython \
+    ipython3 \
     itop \
     less \
     libpq-dev \
@@ -38,6 +38,7 @@ RUN apt-get update \
     unixodbc \
     unixodbc-dev \
     vim \
+    zip \
  && rm -rf /var/lib/apt/lists/*
 
 # Install packages via pip.
