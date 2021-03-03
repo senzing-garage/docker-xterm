@@ -17,28 +17,28 @@ USER root
 
 RUN apt-get update \
  && apt-get -y install \
-    elfutils \
-    fio \
-    htop \
-    iotop \
-    ipython3 \
-    itop \
-    less \
-    libpq-dev \
-    net-tools \
-    odbc-postgresql \
-    procps \
-    pstack \
-    python-dev \
-    python-pyodbc \
-    python-setuptools \
-    strace \
-    telnet \
-    tree \
-    unixodbc \
-    unixodbc-dev \
-    vim \
-    zip \
+      elfutils \
+      fio \
+      htop \
+      iotop \
+      ipython3 \
+      itop \
+      less \
+      libpq-dev \
+      net-tools \
+      odbc-postgresql \
+      procps \
+      pstack \
+      python-dev \
+      python-pyodbc \
+      python-setuptools \
+      strace \
+      telnet \
+      tree \
+      unixodbc \
+      unixodbc-dev \
+      vim \
+      zip \
  && rm -rf /var/lib/apt/lists/*
 
 # Install packages via pip.
