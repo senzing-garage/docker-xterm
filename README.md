@@ -1,5 +1,46 @@
 # docker-xterm
 
+## Synopsis
+
+A docker container that gives a web-based terminal.
+Similar to `ssh`, but over HTTP.
+
+## Overview
+
+The `senzing/xterm` container is a web application that creates the facade of a Xterm window.
+Behind the scenes, keystrokes typed into the web-based Xterm window are sent via socket to the running docker container
+to be executed within the container.  The results of the command are sent via socket back to the web Xterm window.
+
+With the Senzing binaries mounted to the running `senzing/xterm` container as described below,
+Senzing commands such as `G2Command.py`, `G2Explorer.py`, `G2Loader.py`, etc.
+can be executed.
+
+To access files outside of the container, files should be place on mounted volumes.
+For instance, the `/var/opt/senzing` directory as shown below.
+
+### Contents
+
+1. [Preamble](#preamble)
+    1. [Legend](#legend)
+1. [Related artifacts](#related-artifacts)
+1. [Expectations](#expectations)
+1. [Demonstrate using Docker](#demonstrate-using-docker)
+    1. [Prerequisites for Docker](#prerequisites-for-docker)
+    1. [Docker volumes](#docker-volumes)
+    1. [Docker network](#docker-network)
+    1. [Docker user](#docker-user)
+    1. [Run Docker container](#run-docker-container)
+1. [Develop](#develop)
+    1. [Prerequisites for development](#prerequisites-for-development)
+    1. [Clone repository](#clone-repository)
+    1. [Build Docker image](#build-docker-image)
+1. [Examples](#examples)
+    1. [Examples of Docker](#examples-of-docker)
+1. [Advanced](#advanced)
+    1. [Configuration](#configuration)
+1. [Errors](#errors)
+1. [References](#references)
+
 ## Preamble
 
 At [Senzing](http://senzing.com),
@@ -12,33 +53,7 @@ If the instructions are not clear, please let us know by opening a new
 [Documentation issue](https://github.com/Senzing/docker-xterm/issues/new?template=documentation_request.md)
 describing where we can improve.   Now on with the show...
 
-## Overview
-
-### Contents
-
-1. [Related artifacts](#related-artifacts)
-1. [Expectations](#expectations)
-1. [Demonstrate using Docker](#demonstrate-using-docker)
-    1. [Prerequisites for Docker](#prerequisites-for-docker)
-    1. [Docker volumes](#docker-volumes)
-    1. [Docker network](#docker-network)
-    1. [Docker user](#docker-user)
-    1. [Database support](#database-support)
-    1. [External database](#external-database)
-    1. [Run Docker container](#run-docker-container)
-1. [Develop](#develop)
-    1. [Prerequisites for development](#prerequisites-for-development)
-    1. [Clone repository](#clone-repository)
-    1. [Build Docker image](#build-docker-image)
-1. [Examples](#examples)
-    1. [Examples of CLI](#examples-of-cli)
-    1. [Examples of Docker](#examples-of-docker)
-1. [Advanced](#advanced)
-    1. [Configuration](#configuration)
-1. [Errors](#errors)
-1. [References](#references)
-
-#### Legend
+### Legend
 
 1. :thinking: - A "thinker" icon means that a little extra thinking may be required.
    Perhaps there are some choices to be made.
@@ -253,8 +268,6 @@ see [Environment Variables](https://github.com/Senzing/knowledge-base/blob/maste
 
 ## Examples
 
-### Examples of CLI
-
 ### Examples of Docker
 
 The following examples require initialization described in
@@ -267,8 +280,6 @@ The following examples require initialization described in
 Configuration values specified by environment variable or command line parameter.
 
 - **[SENZING_DATA_VERSION_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_data_version_dir)**
-- **[SENZING_DATABASE_URL](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_database_url)**
-- **[SENZING_DEBUG](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_debug)**
 - **[SENZING_ETC_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_etc_dir)**
 - **[SENZING_G2_DIR](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_g2_dir)**
 - **[SENZING_NETWORK](https://github.com/Senzing/knowledge-base/blob/master/lists/environment-variables.md#senzing_network)**

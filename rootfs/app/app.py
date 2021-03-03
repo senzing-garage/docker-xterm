@@ -13,9 +13,13 @@ import fcntl
 import shlex
 
 __all__ = []
-__version__ = "1.0.0"  # See https://www.python.org/dev/peps/pep-0396/
+__version__ = "1.1.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
-__updated__ = '2020-04-26'
+__updated__ = '2021-03-03'
+
+# Pull OS environment variables
+
+url_prefix = os.environ.get("SENZING_BASE_URL_XTERM", "/")
 
 # Initialize Flask instance and SocketIO instance.
 
@@ -55,7 +59,7 @@ def read_os_write_socketio():
 # -----------------------------------------------------------------------------
 
 
-@app.route("/")
+@app.route(url_prefix)
 def index():
     return render_template("index.html")
 

@@ -5,7 +5,7 @@ ENV REFRESHED_AT=2020-02-04
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.0.3"
+      Version="1.1.0"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -33,6 +33,7 @@ RUN apt-get update \
     python-pyodbc \
     python-setuptools \
     strace \
+    telnet \
     tree \
     unixodbc \
     unixodbc-dev \
