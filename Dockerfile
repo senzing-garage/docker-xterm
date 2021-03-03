@@ -17,27 +17,28 @@ USER root
 
 RUN apt-get update \
  && apt-get -y install \
-    elfutils \
-    fio \
-    htop \
-    iotop \
-    ipython \
-    itop \
-    less \
-    libpq-dev \
-    net-tools \
-    odbc-postgresql \
-    procps \
-    pstack \
-    python-dev \
-    python-pyodbc \
-    python-setuptools \
-    strace \
-    telnet \
-    tree \
-    unixodbc \
-    unixodbc-dev \
-    vim \
+      elfutils \
+      fio \
+      htop \
+      iotop \
+      ipython3 \
+      itop \
+      less \
+      libpq-dev \
+      net-tools \
+      odbc-postgresql \
+      procps \
+      pstack \
+      python-dev \
+      python-pyodbc \
+      python-setuptools \
+      strace \
+      telnet \
+      tree \
+      unixodbc \
+      unixodbc-dev \
+      vim \
+      zip \
  && rm -rf /var/lib/apt/lists/*
 
 # Install packages via pip.
@@ -54,10 +55,10 @@ RUN pip3 install --upgrade pip \
       jinja2==2.10 \
       markupsafe==1.1.1 \
       pandas \
+      psycopg2 \
       ptable \
       pyodbc \
       pysnooper \
-      psycopg2 \
       python-engineio==3.4.3 \
       python-levenshtein \
       python-socketio==3.1.2 \
