@@ -15,19 +15,21 @@ import shlex
 __all__ = []
 __version__ = "1.1.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
-__updated__ = '2021-03-03'
+__updated__ = '2021-03-04'
 
 # Pull OS environment variables
 
 url_prefix = os.environ.get("SENZING_BASE_URL_XTERM", "/")
+static_url_path = url_prefix[:-1]
 
 # Initialize Flask instance and SocketIO instance.
 
-app = Flask(__name__, static_folder=".", static_url_path="")
+app = Flask(__name__, static_folder=".", static_url_path=static_url_path)
 app.config["SECRET_KEY"] = "secret!"
 app.config["file_descriptor"] = None
 app.config["child_pid"] = None
-socketio = SocketIO(app)
+socketio = SocketIO(app, path='/xterm/socket.io')
+# socketio = SocketIO(app)
 
 
 def set_window_size(file_descriptor, row, col, xpix=0, ypix=0):
