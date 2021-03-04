@@ -55,9 +55,8 @@ html {
 
     // Traffic from host to xterm.
 
-    // const socket = io.connect('/pty')
     const socket = io.connect('/pty', {
-      path: '/xterm/socket.io'
+      path: '{{ io_connect_path }}'
     });
     socket.emit("pty-input", {"input": "\n"})
 
