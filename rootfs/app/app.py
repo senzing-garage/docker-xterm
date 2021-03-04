@@ -15,19 +15,22 @@ import shlex
 __all__ = []
 __version__ = "1.1.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
-__updated__ = '2021-03-03'
+__updated__ = '2021-03-04'
 
 # Pull OS environment variables
 
 url_prefix = os.environ.get("SENZING_BASE_URL_XTERM", "/")
+static_url_path = url_prefix[:-1]
+socketio_path = "{0}socket.io".format(url_prefix[1:])
+io_connect_path = "{0}socket.io".format(url_prefix)
 
 # Initialize Flask instance and SocketIO instance.
 
-app = Flask(__name__, static_folder=".", static_url_path="")
+app = Flask(__name__, static_folder=".", static_url_path=static_url_path)
 app.config["SECRET_KEY"] = "secret!"
 app.config["file_descriptor"] = None
 app.config["child_pid"] = None
-socketio = SocketIO(app)
+socketio = SocketIO(app, path=socketio_path)
 
 
 def set_window_size(file_descriptor, row, col, xpix=0, ypix=0):
@@ -61,7 +64,10 @@ def read_os_write_socketio():
 
 @app.route(url_prefix)
 def index():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        io_connect_path=io_connect_path
+    )
 
 # -----------------------------------------------------------------------------
 # socketio
