@@ -12,7 +12,7 @@ psycopg2
 ptable
 pyodbc
 pysnooper
-python-engineio==3.4.3
+python-engineio==3.8.2.post1
 python-levenshtein
 python-socketio==3.1.2
 setuptools
