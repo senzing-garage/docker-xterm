@@ -43,28 +43,9 @@ RUN apt-get update \
 
 # Install packages via pip.
 
+COPY requirements.txt ./
 RUN pip3 install --upgrade pip \
- && pip3 install \
-      click==7.0 \
-      csvkit \
-      eventlet \
-      flask-socketio==3.3.1 \
-      flask==1.0.2 \
-      fuzzywuzzy \
-      itsdangerous==1.1.0 \
-      jinja2==2.10 \
-      markupsafe==1.1.1 \
-      pandas \
-      psycopg2 \
-      ptable \
-      pyodbc \
-      pysnooper \
-      python-engineio==3.4.3 \
-      python-levenshtein \
-      python-socketio==3.1.2 \
-      setuptools \
-      six==1.12.0 \
-      werkzeug==0.14.1
+ && pip3 install -r requirements.txt
 
 # The port for the Flask is 5000.
 
