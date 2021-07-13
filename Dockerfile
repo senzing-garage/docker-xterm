@@ -5,7 +5,7 @@ ENV REFRESHED_AT=2021-07-13
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.2.0"
+      Version="1.1.1"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
