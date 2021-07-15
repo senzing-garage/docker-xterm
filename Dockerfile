@@ -1,11 +1,11 @@
-ARG BASE_IMAGE=senzing/senzing-base:1.6.0
+ARG BASE_IMAGE=senzing/senzing-base:1.6.1
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2021-07-13
+ENV REFRESHED_AT=2021-07-15
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.1.1"
+      Version="1.1.2"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
