@@ -1,77 +1,39 @@
 ARG BASE_IMAGE=senzing/senzing-base:1.6.1
-FROM ${BASE_IMAGE}
+ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
-ENV REFRESHED_AT=2021-07-23
+# -----------------------------------------------------------------------------
+# Stage: builder
+# -----------------------------------------------------------------------------
 
-LABEL Name="senzing/xterm" \
+FROM ${BASE_BUILDER_IMAGE} as builder
+
+# Set Shell to use for RUN commands in builder step.
+
+ENV REFRESHED_AT=2021-08-22
+
+LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.1.3"
+      Version="1.0.0"
 
-HEALTHCHECK CMD ["/app/healthcheck.sh"]
+# Build arguments.
 
-# Run as "root" for system installation.
+ARG SENZING_API_SERVER_VERSION=2.7.2
 
 USER root
 
-# Install packages via apt.
+# Set working directory.
 
-RUN apt-get update \
- && apt-get -y install \
-      elfutils \
-      htop \
-      iotop \
-      ipython3 \
-      itop \
-      less \
-      libpq-dev \
-      net-tools \
-      procps \
-      pstack \
-      python3-setuptools \
-      strace \
-      telnet \
-      tree \
-      unixodbc-dev \
-      zip \
-      && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-# Install packages via pip.
+# Add `/app/node_modules/.bin` to $PATH
 
-COPY requirements.txt ./
-RUN pip3 install --upgrade pip \
- && pip3 install -r requirements.txt
+ENV PATH /app/node_modules/.bin:$PATH
 
-# work around until Debian repos catch up to modern versions of fio --Dr. Ant
+# Install and cache app dependencies.
 
-RUN mkdir /tmp/fio \
- && cd /tmp/fio \
- && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.27.zip \
- && unzip fio-3.27.zip \
- && cd fio-fio-3.27/ \
- && ./configure \
- && make \
- && make install \
- && fio --version \
- && cd \
- && rm -rf /tmp/fio
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
 
-# The port for the Flask is 5000.
 
-EXPOSE 5000
-
-# Copy files from repository.
-
-COPY ./rootfs /
-
-# Make a simple prompt.
-
-RUN echo " PS1='$ '" >> /etc/bash.bashrc
-
-# Make non-root container.
-
-USER 1001
-
-# Runtime execution.
-
-WORKDIR /
-CMD ["/app/xterm.py"]
+RUN npm config set loglevel warn \
+ && npm install
