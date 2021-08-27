@@ -25,66 +25,75 @@ html {
 
     <script>
 
-    const terminal = new Terminal({
+    // Create terminal.
+    // Options: https://github.com/xtermjs/xterm.js/blob/master/typings/xterm.d.ts
+
+    const term = new Terminal({
           cursorBlink: true,
           macOptionIsMeta: true,
           scrollback: 10000,
     });
 
-    // Create websocket.
+    // Create socket.
 
-    const websocket = io('/pty', {
+    const socket = io('/pty', {
       path: '{{ io_connect_path }}'
     });
+
+    console.log("MJD: io_connect_path:", '{{ io_connect_path }}')
+
+    socket.emit("pty-input", {"input": "\n"})
+
+
+    socket.emit("pty-input", {"input": ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> MICHAEL DOCKTER\n"})
 
     // Add features to terminal.
     // Reference: https://github.com/xtermjs/xterm.js/tree/master/addons
 
-    const attachAddon = new AttachAddon.AttachAddon(websocket);
-    terminal.loadAddon(attachAddon);
+    const attachAddon = new AttachAddon.AttachAddon(socket);
+    term.loadAddon(attachAddon);
 
     const fitAddon = new FitAddon.FitAddon();
-    terminal.loadAddon(fitAddon);
+    term.loadAddon(fitAddon);
 
     const searchAddon = new SearchAddon.SearchAddon();
-    terminal.loadAddon(searchAddon);
+    term.loadAddon(searchAddon);
 
-    terminal.loadAddon(new WebLinksAddon.WebLinksAddon());
+    term.loadAddon(new WebLinksAddon.WebLinksAddon());
 
     // Configure terminal.
 
-    terminal.open(document.getElementById('terminal'));
+    term.open(document.getElementById('terminal'));
     fitAddon.fit()
-    terminal.resize(15, 50)
-    console.log(`size: ${terminal.cols} columns, ${terminal.rows} rows`)
+    term.resize(15, 50)
+    console.log(`size: ${term.cols} columns, ${term.rows} rows`)
     fitAddon.fit()
-    terminal.write("\nWelcome to Senzing xterm!\n\r")
+    term.write("\nWelcome to Senzing xterm!\n\r")
 
     // Traffic from xterm to host.
 
-    terminal.on('data', function(data) {
-      console.log("input", data)
-      websocket.emit("pty-input", {"input": data})
+    term.onData(function(data) {
+      console.log("data:", data)
+      socket.emit("pty-input", {"input": data})
     })
 
     // Traffic from host to xterm.
 
-    websocket.emit("pty-input", {"input": "\n"})
-    websocket.on("pty-output", function(data){
+    socket.on("pty-output", function(data){
       console.log("output", data)
-      terminal.write(data.output)
+      term.write(data.output)
     })
 
     // Status.
 
     const status = document.getElementById("status")
 
-    websocket.on("connect", () => {
+    socket.on("connect", () => {
       fitToscreen()
       status.innerHTML = '<span style="background-color: lightgreen;">connected</span>'
     })
 
-    websocket.on("disconnect", () => {
+    socket.on("disconnect", () => {
       status.innerHTML = '<span style="background-color: #ff8383;">disconnected</span>'
     })
 
@@ -92,7 +101,7 @@ html {
 
     function fitToscreen(){
       fitAddon.fit()
-      websocket.emit("resize", {"cols": terminal.cols, "rows": terminal.rows})
+      socket.emit("resize", {"cols": term.cols, "rows": term.rows})
     }
 
     function debounce(func, wait_ms) {
