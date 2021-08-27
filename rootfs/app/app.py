@@ -188,6 +188,7 @@ def main():
 
     # Start listening.
 
+    print("Senzing X-term version: {0} updated: {1}".format(__version__, __updated__))
     print("Senzing X-term serving on http://{0}:{1}".format(args.host, args.port))
     app.config["cmd"] = [args.command] + shlex.split(args.cmd_args)
     socketio.run(app, debug=args.debug, port=args.port, host=args.host)
