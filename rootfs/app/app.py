@@ -13,7 +13,7 @@ import fcntl
 import shlex
 
 __all__ = []
-__version__ = "1.1.0"  # See https://www.python.org/dev/peps/pep-0396/
+__version__ = "1.2.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
 __updated__ = '2021-08-27'
 
@@ -24,13 +24,10 @@ static_url_path = url_prefix[:-1]
 socketio_path = "{0}socket.io".format(url_prefix[1:])
 io_connect_path = "{0}socket.io".format(url_prefix)
 
-print("MJD: io_connect_path: {0}".format(io_connect_path))
-
-
 # Initialize Flask instance and SocketIO instance.
 
 app = Flask(__name__, static_folder=".", static_url_path=static_url_path)
-app.config["SECRET_KEY"] = "secret!"
+app.config["SECRET_KEY"] = os.environ.get("SENZING_XTERM_SECRET", "senzing-xterm-secret!")
 app.config["file_descriptor"] = None
 app.config["child_pid"] = None
 socketio = SocketIO(app, path=socketio_path)
@@ -40,8 +37,6 @@ def set_window_size(file_descriptor, row, col, xpix=0, ypix=0):
     """
     Set the window size.
     """
-
-    print("MJD: set_window_size: ")
 
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(file_descriptor, termios.TIOCSWINSZ, winsize)
@@ -60,9 +55,6 @@ def read_os_write_socketio():
             (data_ready, _, _) = select.select([app.config["file_descriptor"]], [], [], timeout_sec)
             if data_ready:
                 output = os.read(app.config["file_descriptor"], max_read_bytes).decode()
-
-                print("MJD: read_os_write_socketio: {0}".format(output))
-
                 socketio.emit("pty-output", {"output": output}, namespace="/pty")
 
 # -----------------------------------------------------------------------------
@@ -88,8 +80,6 @@ def pty_input(data):
     Write to the pseudo-terminal.
     """
 
-    print("MJD: pty_input: {0}".format(data))
-
     if app.config["file_descriptor"]:
         os.write(app.config["file_descriptor"], data["input"].encode())
 
@@ -100,9 +90,6 @@ def resize(data):
     Account for window resize.
     """
 
-    print("MJD: resize {0}".format(data))
-
-
     if app.config["file_descriptor"]:
         set_window_size(app.config["file_descriptor"], data["rows"], data["cols"])
 
@@ -112,8 +99,6 @@ def connect():
     """
     New client connection.
     """
-
-    print("MJD: connect")
 
     # If child process already running, don't start a new one.
 

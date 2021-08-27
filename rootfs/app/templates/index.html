@@ -39,13 +39,7 @@ html {
     const socket = io('/pty', {
       path: '{{ io_connect_path }}'
     });
-
-    console.log("MJD: io_connect_path:", '{{ io_connect_path }}')
-
     socket.emit("pty-input", {"input": "\n"})
-
-
-    socket.emit("pty-input", {"input": ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> MICHAEL DOCKTER\n"})
 
     // Add features to terminal.
     // Reference: https://github.com/xtermjs/xterm.js/tree/master/addons
@@ -70,17 +64,15 @@ html {
     fitAddon.fit()
     term.write("\nWelcome to Senzing xterm!\n\r")
 
-    // Traffic from xterm to host.
+    // Traffic from browser to host.
 
     term.onData(function(data) {
-      console.log("data:", data)
       socket.emit("pty-input", {"input": data})
     })
 
-    // Traffic from host to xterm.
+    // Traffic from host to browser.
 
     socket.on("pty-output", function(data){
-      console.log("output", data)
       term.write(data.output)
     })
 
