@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
 
 import argparse
+import fcntl
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-import pty
+import logging
 import os
-import subprocess
+import pty
 import select
-import termios
-import struct
-import fcntl
 import shlex
+import struct
+import subprocess
+import termios
 
 __all__ = []
 __version__ = "1.2.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
 __updated__ = '2021-08-27'
+
+SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/master/lists/senzing-product-ids.md
+log_format = '%(asctime)s %(message)s'
 
 # Pull OS environment variables
 
@@ -182,14 +186,29 @@ def get_parser():
 
 def main():
 
+    log_level_map = {
+        "notset": logging.NOTSET,
+        "debug": logging.DEBUG,
+        "info": logging.INFO,
+        "fatal": logging.FATAL,
+        "warning": logging.WARNING,
+        "error": logging.ERROR,
+        "critical": logging.CRITICAL
+    }
+
+    log_level_parameter = os.getenv("SENZING_LOG_LEVEL", "info").lower()
+    log_level = log_level_map.get(log_level_parameter, logging.INFO)
+    logging.basicConfig(format=log_format, level=log_level)
+
     # Parse input.
 
     args = get_parser().parse_args()
 
     # Start listening.
 
-    print("Senzing X-term version: {0} updated: {1}".format(__version__, __updated__))
-    print("Senzing X-term serving on http://{0}:{1}".format(args.host, args.port))
+    logging.info("senzing-{0}0001I Senzing X-term version: {1} updated: {2}".format(SENZING_PRODUCT_ID, __version__, __updated__))
+    logging.info("senzing-{0}0002I Senzing X-term serving on http://{1}:{2}".format(SENZING_PRODUCT_ID, args.host, args.port))
+
     app.config["cmd"] = [args.command] + shlex.split(args.cmd_args)
     socketio.run(app, debug=args.debug, port=args.port, host=args.host)
 
