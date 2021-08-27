@@ -8,7 +8,7 @@ html {
 }
 </style>
 <link rel="icon" href="{{ url_for('static', filename='static/img/favicon.ico') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='static/css/lib/xterm.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='static/css/xterm.css') }}" />
 </head>
 
 <body>
@@ -16,73 +16,83 @@ html {
     <span style="font-size: 1.4em;">Sen</span><span style="font-size: 1.4em; color: red;">z</span><span style="font-size: 1.4em;">ing</span>
     <span style="font-size: 1.4em;">xterm</span>&nbsp;&nbsp;&nbsp;
     <span style="font-size: small; float:right">Status: <span style="font-size: small;" id="status">connecting...</span></span>
-    <script src="{{ url_for('static', filename='static/js/lib/xterm.js') }}"></script>
-    <script src="{{ url_for('static', filename='static/js/lib/addons/fit/fit.js') }}"></script>
-    <script src="{{ url_for('static', filename='static/js/lib/addons/fullscreen/fullscreen.js') }}"></script>
-    <script src="{{ url_for('static', filename='static/js/lib/addons/search/search.js') }}"></script>
-    <script src="{{ url_for('static', filename='static/js/lib/addons/webLinks/webLinks.js') }}"></script>
-    <script src="{{ url_for('static', filename='static/js/lib/socket.io/2.1.1/socket.io.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/xterm.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/xterm-addon-attach.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/xterm-addon-fit.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/xterm-addon-search.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/xterm-addon-web-links.js') }}"></script>
+    <script src="{{ url_for('static', filename='static/js/socket.io.js') }}"></script>
 
     <script>
 
-    // Create terminal instance.
-
-    Terminal.applyAddon(fullscreen)
-    Terminal.applyAddon(fit)
-    Terminal.applyAddon(webLinks)
-    Terminal.applyAddon(search)
-    const term = new Terminal({
+    const terminal = new Terminal({
           cursorBlink: true,
           macOptionIsMeta: true,
           scrollback: 10000,
     });
 
+    // Create websocket.
+
+    const websocket = io('/pty', {
+      path: '{{ io_connect_path }}'
+    });
+
+    // Add features to terminal.
+    // Reference: https://github.com/xtermjs/xterm.js/tree/master/addons
+
+    const attachAddon = new AttachAddon.AttachAddon(websocket);
+    terminal.loadAddon(attachAddon);
+
+    const fitAddon = new FitAddon.FitAddon();
+    terminal.loadAddon(fitAddon);
+
+    const searchAddon = new SearchAddon.SearchAddon();
+    terminal.loadAddon(searchAddon);
+
+    terminal.loadAddon(new WebLinksAddon.WebLinksAddon());
+
     // Configure terminal.
 
-    term.open(document.getElementById('terminal'));
-    term.fit()
-    term.resize(15, 50)
-    console.log(`size: ${term.cols} columns, ${term.rows} rows`)
-    term.fit()
-    term.write("\nWelcome to Senzing xterm!\n\r")
+    terminal.open(document.getElementById('terminal'));
+    fitAddon.fit()
+    terminal.resize(15, 50)
+    console.log(`size: ${terminal.cols} columns, ${terminal.rows} rows`)
+    fitAddon.fit()
+    terminal.write("\nWelcome to Senzing xterm!\n\r")
 
     // Traffic from xterm to host.
 
-    term.on('data', function(data) {
+    terminal.on('data', function(data) {
       console.log("input", data)
-      socket.emit("pty-input", {"input": data})
+      websocket.emit("pty-input", {"input": data})
     })
 
     // Traffic from host to xterm.
 
-    const socket = io.connect('/pty', {
-      path: '{{ io_connect_path }}'
-    });
-    socket.emit("pty-input", {"input": "\n"})
-
-    socket.on("pty-output", function(data){
+    websocket.emit("pty-input", {"input": "\n"})
+    websocket.on("pty-output", function(data){
       console.log("output", data)
-      term.write(data.output)
+      terminal.write(data.output)
     })
 
     // Status.
 
     const status = document.getElementById("status")
 
-    socket.on("connect", () => {
+    websocket.on("connect", () => {
       fitToscreen()
       status.innerHTML = '<span style="background-color: lightgreen;">connected</span>'
     })
 
-    socket.on("disconnect", () => {
+    websocket.on("disconnect", () => {
       status.innerHTML = '<span style="background-color: #ff8383;">disconnected</span>'
     })
 
     // Window resizing.
 
     function fitToscreen(){
-      term.fit()
-      socket.emit("resize", {"cols": term.cols, "rows": term.rows})
+      fitAddon.fit()
+      websocket.emit("resize", {"cols": terminal.cols, "rows": terminal.rows})
     }
 
     function debounce(func, wait_ms) {
