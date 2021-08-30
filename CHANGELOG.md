@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2021-08-27
+
+### Added to 1.2.0
+
+- Remove static javascript libraries
+- Update versions of dependencies (requirements.txt and package.json)
+
 ## [1.1.3] - 2021-07-23
 
 ### Added to 1.1.3
