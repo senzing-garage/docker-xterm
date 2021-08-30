@@ -30,6 +30,7 @@ For instance, the `/var/opt/senzing` directory as shown below.
     1. [Docker network](#docker-network)
     1. [Docker user](#docker-user)
     1. [Run Docker container](#run-docker-container)
+    1. [View XTerm](#view-xterm)
 1. [Develop](#develop)
     1. [Prerequisites for development](#prerequisites-for-development)
     1. [Clone repository](#clone-repository)
