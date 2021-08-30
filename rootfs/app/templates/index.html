@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>xterm</title>
+<title>Senzing xterm</title>
 <style>
 html {
   font-family: arial;
@@ -96,6 +96,11 @@ html {
       socket.emit("resize", {"cols": term.cols, "rows": term.rows})
     }
 
+    const wait_ms = 50;
+    window.onresize = debounce(fitToscreen, wait_ms)
+
+    // Debounce.
+
     function debounce(func, wait_ms) {
       let timeout
       return function(...args) {
@@ -104,9 +109,6 @@ html {
         timeout = setTimeout(() => func.apply(context, args), wait_ms)
       }
     }
-
-    const wait_ms = 50;
-    window.onresize = debounce(fitToscreen, wait_ms)
 
   </script>
 

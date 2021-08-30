@@ -11,19 +11,89 @@ import select
 import shlex
 import struct
 import subprocess
+import sys
 import termios
 
 __all__ = []
 __version__ = "1.2.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
-__updated__ = '2021-08-27'
+__updated__ = '2021-08-30'
 
 SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/master/lists/senzing-product-ids.md
 log_format = '%(asctime)s %(message)s'
 
-# Pull OS environment variables
+# -----------------------------------------------------------------------------
+# Message handling
+# -----------------------------------------------------------------------------
+
+# 1xx Informational (i.e. logging.info())
+# 3xx Warning (i.e. logging.warning())
+# 5xx User configuration issues (either logging.warning() or logging.err() for Client errors)
+# 7xx Internal error (i.e. logging.error for Server errors)
+# 9xx Debugging (i.e. logging.debug())
+
+MESSAGE_INFO = 100
+MESSAGE_WARN = 300
+MESSAGE_ERROR = 700
+MESSAGE_DEBUG = 900
+
+message_dictionary = {
+    "100": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}I",
+    "101": "Senzing X-term version: {0} updated: {1}",
+    "102": "Senzing X-term serving on http://{0}:{1}",
+    "103": "Connected. PID: {0}",
+    "104": "Started background task. PID: {0} Running command: '{1}'",
+    "297": "Enter {0}",
+    "298": "Exit {0}",
+    "299": "{0}",
+    "300": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}W",
+    "499": "{0}",
+    "500": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}E",
+    "699": "{0}",
+    "700": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}E",
+    "899": "{0}",
+    "900": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}D",
+    "999": "{0}",
+}
+
+
+def message(index, *args):
+    index_string = str(index)
+    template = message_dictionary.get(index_string, "No message for index {0}.".format(index_string))
+    return template.format(*args)
+
+
+def message_generic(generic_index, index, *args):
+    return "{0} {1}".format(message(generic_index, index), message(index, *args))
+
+
+def message_info(index, *args):
+    return message_generic(MESSAGE_INFO, index, *args)
+
+
+def message_warning(index, *args):
+    return message_generic(MESSAGE_WARN, index, *args)
+
+
+def message_error(index, *args):
+    return message_generic(MESSAGE_ERROR, index, *args)
+
+
+def message_debug(index, *args):
+    return message_generic(MESSAGE_DEBUG, index, *args)
+
+# -----------------------------------------------------------------------------
+# Initialize environment
+# -----------------------------------------------------------------------------
+
+# Pull OS environment variables.
+
 
 url_prefix = os.environ.get("SENZING_BASE_URL_XTERM", "/")
+xterm_secret = os.environ.get("SENZING_XTERM_SECRET", "senzing-xterm-secret!")
+
+# Synthesize variables.
+
 static_url_path = url_prefix[:-1]
 socketio_path = "{0}socket.io".format(url_prefix[1:])
 io_connect_path = "{0}socket.io".format(url_prefix)
@@ -31,7 +101,7 @@ io_connect_path = "{0}socket.io".format(url_prefix)
 # Initialize Flask instance and SocketIO instance.
 
 app = Flask(__name__, static_folder=".", static_url_path=static_url_path)
-app.config["SECRET_KEY"] = os.environ.get("SENZING_XTERM_SECRET", "senzing-xterm-secret!")
+app.config["SECRET_KEY"] = xterm_secret
 app.config["file_descriptor"] = None
 app.config["child_pid"] = None
 socketio = SocketIO(app, path=socketio_path)
@@ -104,6 +174,8 @@ def connect():
     New client connection.
     """
 
+    logging.info(message_info(103, app.config["child_pid"]))
+
     # If child process already running, don't start a new one.
 
     if app.config["child_pid"]:
@@ -126,7 +198,7 @@ def connect():
         set_window_size(file_descriptor, 50, 50)
         cmd = " ".join(shlex.quote(cmd_arg) for cmd_arg in app.config["cmd"])
         socketio.start_background_task(target=read_os_write_socketio)
-        print("Started background task (pid: {0}) running command: '{1}'".format(child_pid, cmd))
+        logging.info(message_info(104, child_pid, cmd))
 
 # -----------------------------------------------------------------------------
 # Define argument parser
@@ -186,6 +258,8 @@ def get_parser():
 
 def main():
 
+    # Configure logging.
+
     log_level_map = {
         "notset": logging.NOTSET,
         "debug": logging.DEBUG,
@@ -206,8 +280,8 @@ def main():
 
     # Start listening.
 
-    logging.info("senzing-{0}0001I Senzing X-term version: {1} updated: {2}".format(SENZING_PRODUCT_ID, __version__, __updated__))
-    logging.info("senzing-{0}0002I Senzing X-term serving on http://{1}:{2}".format(SENZING_PRODUCT_ID, args.host, args.port))
+    logging.info(message_info(101, __version__, __updated__))
+    logging.info(message_info(102, args.host, args.port))
 
     app.config["cmd"] = [args.command] + shlex.split(args.cmd_args)
     socketio.run(app, debug=args.debug, port=args.port, host=args.host)

@@ -37,6 +37,30 @@ COPY package-lock.json /app/package-lock.json
 RUN npm config set loglevel warn \
  && npm install
 
+# Install packages via apt for building fio.
+
+RUN apt-get update \
+ && apt-get -y install \
+      gcc \
+      make \
+      unzip \
+      wget \
+      && rm -rf /var/lib/apt/lists/*
+
+# Work around until Debian repos catch up to modern versions of fio.
+
+RUN mkdir /tmp/fio \
+ && cd /tmp/fio \
+ && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.27.zip \
+ && unzip fio-3.27.zip \
+ && cd fio-fio-3.27/ \
+ && ./configure \
+ && make \
+ && make install \
+ && fio --version \
+ && cd \
+ && rm -rf /tmp/fio
+
 # -----------------------------------------------------------------------------
 # Stage: Final
 # -----------------------------------------------------------------------------
@@ -78,25 +102,13 @@ RUN apt-get update \
       zip \
       && rm -rf /var/lib/apt/lists/*
 
+COPY --from=builder "/usr/local/bin/fio" "/usr/local/bin/fio"
+
 # Install packages via pip.
 
 COPY requirements.txt ./
 RUN pip3 install --upgrade pip \
  && pip3 install -r requirements.txt
-
-# Work around until Debian repos catch up to modern versions of fio.
-
-RUN mkdir /tmp/fio \
- && cd /tmp/fio \
- && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.27.zip \
- && unzip fio-3.27.zip \
- && cd fio-fio-3.27/ \
- && ./configure \
- && make \
- && make install \
- && fio --version \
- && cd \
- && rm -rf /tmp/fio
 
 # The port for the Flask is 5000.
 
