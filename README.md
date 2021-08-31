@@ -3,7 +3,7 @@
 ## Synopsis
 
 A docker container that gives a web-based terminal.
-Similar to `ssh`, but over HTTP.
+Similar to `ssh`, but over HTTP/S.
 
 ## Overview
 
@@ -30,6 +30,7 @@ For instance, the `/var/opt/senzing` directory as shown below.
     1. [Docker network](#docker-network)
     1. [Docker user](#docker-user)
     1. [Run Docker container](#run-docker-container)
+    1. [View XTerm](#view-xterm)
 1. [Develop](#develop)
     1. [Prerequisites for development](#prerequisites-for-development)
     1. [Clone repository](#clone-repository)
@@ -191,6 +192,13 @@ it accounts for all of the optional variations described above.
 Unset `*_PARAMETER` environment variables have no effect on the
 `docker run` command and may be removed or remain.
 
+1. :pencil2: Identify a port to view XTerm.
+   Example:
+
+    ```console
+    export SENZING_XTERM_PORT=8254
+    ```
+
 1. Run Docker container.
    Example:
 
@@ -198,6 +206,7 @@ Unset `*_PARAMETER` environment variables have no effect on the
     sudo docker run \
       --interactive \
       --rm \
+      --publish ${SENZING_XTERM_PORT}:5000 \
       --tty \
       --volume ${SENZING_DATA_VERSION_DIR}:/opt/senzing/data \
       --volume ${SENZING_ETC_DIR}:/etc/opt/senzing \
@@ -207,6 +216,28 @@ Unset `*_PARAMETER` environment variables have no effect on the
       ${SENZING_RUNAS_USER_PARAMETER} \
       senzing/xterm
     ```
+
+### View XTerm
+
+The web-based Senzing X-term can be used to run Senzing command-line programs.
+
+1. If `SENZING_XTERM_PORT` was set to `8254`,
+   Senzing X-term will be viewable at
+   [localhost:8254](http://localhost:8254).
+   In general, visit the web address having the following format:
+   `http://${SENZING_XTERM_HOST}:${SENZING_XTERM_PORT}`
+   Example:
+
+    ```console
+    export SENZING_XTERM_HOST=localhost
+    export SENZING_XTERM_PORT=8254
+    ```
+
+   becomes `http://localhost:8254`.
+
+1. See
+   [additional tips](https://github.com/Senzing/knowledge-base/blob/master/lists/docker-compose-demo-tips.md#senzing-x-term)
+   for working with Senzing X-Term.
 
 1. For more examples of use, see [Examples of Docker](#examples-of-docker).
 
