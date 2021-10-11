@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=senzing/senzing-base:1.6.1
+ARG BASE_IMAGE=senzing/senzing-base:1.6.2
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 # -----------------------------------------------------------------------------
@@ -9,11 +9,11 @@ FROM ${BASE_BUILDER_IMAGE} as builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2021-08-26
+ENV REFRESHED_AT=2021-10-11
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.0.0"
+      Version="1.2.1"
 
 # Build arguments.
 
@@ -65,14 +65,14 @@ RUN mkdir /tmp/fio \
 # Stage: Final
 # -----------------------------------------------------------------------------
 
-ARG BASE_IMAGE=senzing/senzing-base:1.6.1
+ARG BASE_IMAGE=senzing/senzing-base:1.6.2
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2021-07-23
+ENV REFRESHED_AT=2021-10-11
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.2.0"
+      Version="1.2.1"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -110,7 +110,7 @@ COPY requirements.txt ./
 RUN pip3 install --upgrade pip \
  && pip3 install -r requirements.txt \
  && rm /requirements.txt
- 
+
 # The port for the Flask is 5000.
 
 EXPOSE 5000
