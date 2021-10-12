@@ -13,7 +13,7 @@ ENV REFRESHED_AT=2021-10-11
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.2.1"
+      Version="1.2.2"
 
 # Build arguments.
 

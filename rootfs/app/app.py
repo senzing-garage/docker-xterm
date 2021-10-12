@@ -137,6 +137,7 @@ def read_os_write_socketio():
 
 
 @app.route(url_prefix)
+@app.route(static_url_path)
 def index():
     return render_template(
         "index.html",
