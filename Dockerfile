@@ -109,7 +109,7 @@ COPY --from=builder "/usr/local/bin/fio" "/usr/local/bin/fio"
 COPY requirements.txt ./
 RUN pip3 install --upgrade pip \
  && pip3 install -r requirements.txt \
- && rm /requirements.txt
+ && rm requirements.txt
 
 # The port for the Flask is 5000.
 
