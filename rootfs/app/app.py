@@ -135,9 +135,14 @@ def read_os_write_socketio():
 # Flask
 # -----------------------------------------------------------------------------
 
+non_canonical_route = static_url_path
+if not non_canonical_route:
+    non_canonical_route = non_canonical_route + "/"
 
 @app.route(url_prefix)
-@app.route(static_url_path)
+# the above _should_ redirect a non-canonical URL to it's canonical version
+# however, it doesn't seem to work.  So this:
+@app.route(non_canonical_route)
 def index():
     return render_template(
         "index.html",
