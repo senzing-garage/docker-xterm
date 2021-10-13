@@ -13,7 +13,7 @@ ENV REFRESHED_AT=2021-10-11
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.2.2"
+      Version="1.2.3"
 
 # Build arguments.
 
@@ -109,7 +109,7 @@ COPY --from=builder "/usr/local/bin/fio" "/usr/local/bin/fio"
 COPY requirements.txt ./
 RUN pip3 install --upgrade pip \
  && pip3 install -r requirements.txt \
- && rm /requirements.txt
+ && rm requirements.txt
 
 # The port for the Flask is 5000.
 
