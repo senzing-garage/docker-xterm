@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=senzing/senzing-base:1.6.2
+ARG BASE_IMAGE=senzing/senzing-base:1.6.3
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 # -----------------------------------------------------------------------------
@@ -9,7 +9,7 @@ FROM ${BASE_BUILDER_IMAGE} as builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2021-10-11
+ENV REFRESHED_AT=2021-12-07
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
@@ -65,10 +65,10 @@ RUN mkdir /tmp/fio \
 # Stage: Final
 # -----------------------------------------------------------------------------
 
-ARG BASE_IMAGE=senzing/senzing-base:1.6.2
+ARG BASE_IMAGE=senzing/senzing-base:1.6.3
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2021-10-11
+ENV REFRESHED_AT=2021-12-07
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
