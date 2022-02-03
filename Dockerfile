@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=senzing/senzing-base:1.6.4
+ARG BASE_IMAGE=debian:11.2-slim@sha256:4c25ffa6ef572cf0d57da8c634769a08ae94529f7de5be5587ec8ce7b9b50f9c
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 # -----------------------------------------------------------------------------
@@ -9,11 +9,11 @@ FROM ${BASE_BUILDER_IMAGE} as builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2022-01-06
+ENV REFRESHED_AT=2022-02-03
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.2.3"
+      Version="1.2.4"
 
 # Build arguments.
 
@@ -43,6 +43,7 @@ RUN apt-get update \
  && apt-get -y install \
       gcc \
       make \
+      pkg-config \
       unzip \
       wget \
       && rm -rf /var/lib/apt/lists/*
@@ -65,14 +66,13 @@ RUN mkdir /tmp/fio \
 # Stage: Final
 # -----------------------------------------------------------------------------
 
-ARG BASE_IMAGE=senzing/senzing-base:1.6.4
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2022-01-06
+ENV REFRESHED_AT=2022-02-03
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.2.1"
+      Version="1.2.4"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -84,23 +84,28 @@ USER root
 
 RUN apt-get update \
  && apt-get -y install \
-      elfutils \
+      curl \
       htop \
       iotop \
-      ipython3 \
-      itop \
+      jq \
       less \
       libpq-dev \
       net-tools \
+      odbcinst \
+      openssh-server \
+      postgresql-client \
       procps \
-      pstack \
-      python3-setuptools \
+      python3-dev \
+      python3-pip \
+      sqlite3 \
       strace \
-      telnet \
       tree \
       unixodbc-dev \
+      unzip \
+      elvis-tiny \
+      wget \
       zip \
-      && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder "/usr/local/bin/fio" "/usr/local/bin/fio"
 
@@ -132,7 +137,16 @@ COPY --from=builder "/app/node_modules/socket.io-client/dist/socket.io.js.map" "
 
 # Make a simple prompt.
 
-RUN echo " PS1='$ '" >> /etc/bash.bashrc
+RUN echo " PS1='$ '" >> /etc/bash.bashrc \
+ && echo "export LD_LIBRARY_PATH=/opt/senzing/g2/lib:/opt/senzing/g2/lib/debian:/opt/IBM/db2/clidriver/lib" >> /etc/bash.bashrc \
+ && echo "export ODBCSYSINI=/etc/opt/senzing" >> /etc/bash.bashrc \
+ && echo "export PATH=${PATH}:/opt/senzing/g2/python:/opt/IBM/db2/clidriver/adm:/opt/IBM/db2/clidriver/bin" >> /etc/bash.bashrc \
+ && echo "export PYTHONPATH=/opt/senzing/g2/python" >> /etc/bash.bashrc \
+ && echo "export SENZING_ETC_PATH=/etc/opt/senzing" >> /etc/bash.bashrc \
+ && echo "export SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true" >> /etc/bash.bashrc \
+ && echo "export TERM=xterm" >> /etc/bash.bashrc \
+ && echo "export LC_ALL=C" >> /etc/bash.bashrc \
+ && echo "export LANGUAGE=C" >> /etc/bash.bashrc
 
 # Make non-root container.
 
