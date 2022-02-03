@@ -9,11 +9,11 @@ FROM ${BASE_BUILDER_IMAGE} as builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2022-01-06
+ENV REFRESHED_AT=2022-02-03
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.2.3"
+      Version="1.2.4"
 
 # Build arguments.
 
@@ -68,11 +68,11 @@ RUN mkdir /tmp/fio \
 
 FROM ${BASE_IMAGE}
 
-ENV REFRESHED_AT=2022-01-06
+ENV REFRESHED_AT=2022-02-03
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.2.1"
+      Version="1.2.4"
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
