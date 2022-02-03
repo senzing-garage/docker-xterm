@@ -43,6 +43,7 @@ RUN apt-get update \
  && apt-get -y install \
       gcc \
       make \
+      pkg-config \
       unzip \
       wget \
       && rm -rf /var/lib/apt/lists/*
