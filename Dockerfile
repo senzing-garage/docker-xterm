@@ -138,6 +138,12 @@ COPY --from=builder "/app/node_modules/socket.io-client/dist/socket.io.js.map" "
 # Make a simple prompt.
 
 RUN echo " PS1='$ '" >> /etc/bash.bashrc \
+ && echo "export LD_LIBRARY_PATH=/opt/senzing/g2/lib:/opt/senzing/g2/lib/debian:/opt/IBM/db2/clidriver/lib" >> /etc/bash.bashrc \
+ && echo "export ODBCSYSINI=/etc/opt/senzing" >> /etc/bash.bashrc \
+ && echo "export PATH=${PATH}:/opt/senzing/g2/python:/opt/IBM/db2/clidriver/adm:/opt/IBM/db2/clidriver/bin" >> /etc/bash.bashrc \
+ && echo "export PYTHONPATH=/opt/senzing/g2/python" >> /etc/bash.bashrc \
+ && echo "export SENZING_ETC_PATH=/etc/opt/senzing" >> /etc/bash.bashrc \
+ && echo "export SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true" >> /etc/bash.bashrc \
  && echo "export TERM=xterm" >> /etc/bash.bashrc \
  && echo "export LC_ALL=C" >> /etc/bash.bashrc \
  && echo "export LANGUAGE=C" >> /etc/bash.bashrc
