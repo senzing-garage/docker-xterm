@@ -134,7 +134,7 @@ COPY --from=builder "/app/node_modules/xterm-addon-search/lib/*"               "
 COPY --from=builder "/app/node_modules/xterm-addon-web-links/lib/*"            "/app/static/js/"
 COPY --from=builder "/app/node_modules/xterm/css/xterm.css"                    "/app/static/css/"
 COPY --from=builder "/app/node_modules/xterm/lib/*"                            "/app/static/js/"
-COPY --from=builder "/usr/local/bin/fio" "/usr/local/bin/fio"
+COPY --from=builder "/usr/local/bin/fio"                                       "/usr/local/bin/fio"
 
 # The port for the Flask is 5000.
 
