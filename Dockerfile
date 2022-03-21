@@ -5,17 +5,17 @@ ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 # Stage: builder
 # -----------------------------------------------------------------------------
 
-FROM ${BASE_BUILDER_IMAGE} as builder
+FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2022-02-03
+ENV REFRESHED_AT=2022-03-21
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.2.4"
+      Version="1.2.5"
 
-# Build arguments.
+# Run as "root" for system installation.
 
 USER root
 
@@ -66,13 +66,17 @@ RUN mkdir /tmp/fio \
 # Stage: Final
 # -----------------------------------------------------------------------------
 
-FROM ${BASE_IMAGE}
+# Create the runtime image.
 
-ENV REFRESHED_AT=2022-02-03
+FROM ${BASE_IMAGE} AS runner
+
+ENV REFRESHED_AT=2022-03-21
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.2.4"
+      Version="1.2.5"
+
+# Define health check.
 
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 
@@ -85,11 +89,13 @@ USER root
 RUN apt-get update \
  && apt-get -y install \
       curl \
+      elvis-tiny \
       htop \
       iotop \
       jq \
       less \
       libpq-dev \
+      libssl1.1 \
       net-tools \
       odbcinst \
       openssh-server \
@@ -102,55 +108,54 @@ RUN apt-get update \
       tree \
       unixodbc-dev \
       unzip \
-      elvis-tiny \
       wget \
       zip \
+ && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
-
-COPY --from=builder "/usr/local/bin/fio" "/usr/local/bin/fio"
 
 # Install packages via pip.
 
-COPY requirements.txt ./
+COPY requirements.txt .
 RUN pip3 install --upgrade pip \
  && pip3 install -r requirements.txt \
- && rm requirements.txt
-
-# The port for the Flask is 5000.
-
-EXPOSE 5000
+ && rm /requirements.txt
 
 # Copy files from repository.
 
 COPY ./rootfs /
 
-# Copy files from builder step.
+# Copy files from prior stages.
 
-COPY --from=builder "/app/node_modules/xterm/css/xterm.css"                    "/app/static/css/"
-COPY --from=builder "/app/node_modules/xterm/lib/*"                            "/app/static/js/"
+COPY --from=builder "/app/node_modules/socket.io-client/dist/socket.io.js"     "/app/static/js/"
+COPY --from=builder "/app/node_modules/socket.io-client/dist/socket.io.js.map" "/app/static/js/"
 COPY --from=builder "/app/node_modules/xterm-addon-attach/lib/*"               "/app/static/js/"
 COPY --from=builder "/app/node_modules/xterm-addon-fit/lib/*"                  "/app/static/js/"
 COPY --from=builder "/app/node_modules/xterm-addon-search/lib/*"               "/app/static/js/"
 COPY --from=builder "/app/node_modules/xterm-addon-web-links/lib/*"            "/app/static/js/"
-COPY --from=builder "/app/node_modules/socket.io-client/dist/socket.io.js"     "/app/static/js/"
-COPY --from=builder "/app/node_modules/socket.io-client/dist/socket.io.js.map" "/app/static/js/"
+COPY --from=builder "/app/node_modules/xterm/css/xterm.css"                    "/app/static/css/"
+COPY --from=builder "/app/node_modules/xterm/lib/*"                            "/app/static/js/"
+COPY --from=builder "/usr/local/bin/fio"                                       "/usr/local/bin/fio"
 
-# Make a simple prompt.
+# The port for the Flask is 5000.
 
-RUN echo " PS1='$ '" >> /etc/bash.bashrc \
- && echo "export LD_LIBRARY_PATH=/opt/senzing/g2/lib:/opt/senzing/g2/lib/debian:/opt/IBM/db2/clidriver/lib" >> /etc/bash.bashrc \
- && echo "export ODBCSYSINI=/etc/opt/senzing" >> /etc/bash.bashrc \
- && echo "export PATH=${PATH}:/opt/senzing/g2/python:/opt/IBM/db2/clidriver/adm:/opt/IBM/db2/clidriver/bin" >> /etc/bash.bashrc \
- && echo "export PYTHONPATH=/opt/senzing/g2/python" >> /etc/bash.bashrc \
- && echo "export SENZING_ETC_PATH=/etc/opt/senzing" >> /etc/bash.bashrc \
- && echo "export SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true" >> /etc/bash.bashrc \
- && echo "export TERM=xterm" >> /etc/bash.bashrc \
- && echo "export LC_ALL=C" >> /etc/bash.bashrc \
- && echo "export LANGUAGE=C" >> /etc/bash.bashrc
+EXPOSE 5000
 
 # Make non-root container.
 
 USER 1001
+
+# Runtime environment variables.
+
+ENV LANGUAGE=C
+ENV LC_ALL=C
+ENV LD_LIBRARY_PATH=/opt/senzing/g2/lib:/opt/senzing/g2/lib/debian:/opt/IBM/db2/clidriver/lib
+ENV ODBCSYSINI=/etc/opt/senzing
+ENV PATH=${PATH}:/opt/senzing/g2/python:/opt/IBM/db2/clidriver/adm:/opt/IBM/db2/clidriver/bin
+ENV PYTHONPATH=/opt/senzing/g2/python
+ENV PYTHONUNBUFFERED=1
+ENV SENZING_DOCKER_LAUNCHED=true
+ENV SENZING_ETC_PATH=/etc/opt/senzing
+ENV TERM=xterm
 
 # Runtime execution.
 
