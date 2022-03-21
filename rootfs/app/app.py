@@ -128,8 +128,14 @@ def read_os_write_socketio():
             timeout_sec = 0
             (data_ready, _, _) = select.select([app.config["file_descriptor"]], [], [], timeout_sec)
             if data_ready:
-                output = os.read(app.config["file_descriptor"], max_read_bytes).decode()
-                socketio.emit("pty-output", {"output": output}, namespace="/pty")
+                try:
+                    output = os.read(app.config["file_descriptor"], max_read_bytes).decode()
+                except OSError:
+                    output = "Broken pipe"
+                    logging.warn("Broken pipe")
+                    return
+                finally:
+                    socketio.emit("pty-output", {"output": output}, namespace="/pty")
 
 # -----------------------------------------------------------------------------
 # Flask
@@ -184,7 +190,8 @@ def connect():
 
     # If child process already running, don't start a new one.
 
-    if app.config["child_pid"]:
+    if app.config["child_pid"] and check_pid(app.config["child_pid"]):
+        logging.info("...already running, doing nothing!")
         return
 
     # Start a new Pseudo Terminal (PTY) to communicate with.
@@ -194,7 +201,11 @@ def connect():
     # If child process, all output sent to the pseudo-terminal.
 
     if child_pid == 0:
-        subprocess.run(app.config["cmd"])
+        completed_process = subprocess.run(app.config["cmd"])
+        logging.warn("PID {} exited.".format(app.config["child_pid"]))
+        app.config["child_pid"] = None
+        app.config["file_descriptor"] = None
+        os._exit(completed_process.returncode)
 
     # If parent process,
 
@@ -205,6 +216,18 @@ def connect():
         cmd = " ".join(shlex.quote(cmd_arg) for cmd_arg in app.config["cmd"])
         socketio.start_background_task(target=read_os_write_socketio)
         logging.info(message_info(104, child_pid, cmd))
+
+def check_pid(pid):
+    """
+    Check For the existence of a unix pid.
+    """
+
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    else:
+        return True
 
 # -----------------------------------------------------------------------------
 # Define argument parser
