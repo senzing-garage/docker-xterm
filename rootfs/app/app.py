@@ -130,11 +130,44 @@ def read_os_write_socketio():
             if data_ready:
                 try:
                     output = os.read(app.config["file_descriptor"], max_read_bytes).decode()
+
                 except OSError:
-                    output = "Broken pipe"
-                    logging.warn("Broken pipe")
-                    return
+
+                    # Something went wrong with the process.
+                    # Retrieve whether and why it stopped and clean up, if necessary.
+
+                    result = os.waitid(os.P_PID, app.config["child_pid"], os.WEXITED|os.WNOWAIT)
+                    reason = None
+
+                    # Convert si_code into readable name, as the os module defined it
+
+                    for r in ("EXITED", "KILLED", "DUMPED", "TRAPPED", "STOPPED", "CONTINUED"):
+                        if result.si_code == os.__getattribute__("CLD_"+r):
+                            reason = r
+                            break
+
+                    if reason is None:
+                        reason = "unknown"
+                    else:
+
+                        if reason in ("EXITED", "KILLED", "DUMPED"):
+
+                            # The process has ended, but remains as a zombie
+                            # until we read its return code.  Because os.wait()
+                            # blocks until a child process exits, we first
+                            # checked to make sure one was waiting for us.
+
+                            os.wait()
+
+                        #output = "Broken pipe: {}".format(result)
+                        output = "Broken pipe: {}".format(reason)
+                        logging.warn("Broken pipe: {} ({})".format(result, reason))
+                        return
+
                 finally:
+
+                    # In any case, submit the output to the browser.
+
                     socketio.emit("pty-output", {"output": output}, namespace="/pty")
 
 # -----------------------------------------------------------------------------
@@ -191,23 +224,25 @@ def connect():
     # If child process already running, don't start a new one.
 
     if app.config["child_pid"] and check_pid(app.config["child_pid"]):
-        logging.info("...already running, doing nothing!")
         return
 
     # Start a new Pseudo Terminal (PTY) to communicate with.
+    # This thread will duplicate into two, with the same state but one "parent"
+    # and one "child". The parent will be told the pid of the child, while the
+    # child will be told 0. We replace our child python process with a new bash
+    # process which uses the same pid and file descriptor.
 
     (child_pid, file_descriptor) = pty.fork()
 
-    # If child process, all output sent to the pseudo-terminal.
+    # If we are the child process after the fork, replace this process with the shell.
 
     if child_pid == 0:
-        completed_process = subprocess.run(app.config["cmd"])
-        logging.warn("PID {} exited.".format(app.config["child_pid"]))
-        app.config["child_pid"] = None
-        app.config["file_descriptor"] = None
-        os._exit(completed_process.returncode)
+        executable = app.config["cmd"][0]
+        os.fsync()
+        os.execvp(executable, app.config["cmd"])
 
-    # If parent process,
+    # If we are the parent process after the fork, remember the pid and
+    # file descriptor and start forwarding data between it and socketio.
 
     else:
         app.config["file_descriptor"] = file_descriptor
@@ -217,9 +252,15 @@ def connect():
         socketio.start_background_task(target=read_os_write_socketio)
         logging.info(message_info(104, child_pid, cmd))
 
+# -----------------------------------------------------------------------------
+# Check if there is a process with a certain pid
+# -----------------------------------------------------------------------------
+
 def check_pid(pid):
     """
     Check For the existence of a unix pid.
+    Also reports zombie processes, which already exited, but whose return code
+    has yet to be read by the parent process (by calling os.wait() ) to vanish.
     """
 
     try:
