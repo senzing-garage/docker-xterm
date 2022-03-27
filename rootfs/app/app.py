@@ -2,8 +2,8 @@
 
 import argparse
 import fcntl
-from flask import Flask, render_template
-from flask_socketio import SocketIO
+from flask import Flask, request, render_template
+from flask_socketio import SocketIO, join_room, leave_room, rooms
 import logging
 import os
 import pty
@@ -42,7 +42,7 @@ message_dictionary = {
     "101": "Senzing X-term version: {0} updated: {1}",
     "102": "Senzing X-term serving on http://{0}:{1}",
     "103": "Connected. PID: {0}",
-    "104": "Started background task. PID: {0} Running command: '{1}'",
+    "104": "Started background task. PID: {0} Running command: '{1}' On {2}",
     "297": "Enter {0}",
     "298": "Exit {0}",
     "299": "{0}",
@@ -102,8 +102,7 @@ io_connect_path = "{0}socket.io".format(url_prefix)
 
 app = Flask(__name__, static_folder=".", static_url_path=static_url_path)
 app.config["SECRET_KEY"] = xterm_secret
-app.config["file_descriptor"] = None
-app.config["child_pid"] = None
+app.config["sessions"] = dict()
 socketio = SocketIO(app, path=socketio_path)
 
 
@@ -116,27 +115,29 @@ def set_window_size(file_descriptor, row, col, xpix=0, ypix=0):
     fcntl.ioctl(file_descriptor, termios.TIOCSWINSZ, winsize)
 
 
-def read_os_write_socketio():
+def read_os_write_socketio(tty):
     """
     Read from file descriptor and send to pseudo-terminal.
     """
 
+    session = app.config["sessions"].get(tty)
+
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
-        if app.config["file_descriptor"]:
+        if session and session["file_descriptor"]:
             timeout_sec = 0
-            (data_ready, _, _) = select.select([app.config["file_descriptor"]], [], [], timeout_sec)
+            (data_ready, _, _) = select.select([session["file_descriptor"]], [], [], timeout_sec)
             if data_ready:
                 try:
-                    output = os.read(app.config["file_descriptor"], max_read_bytes).decode()
+                    output = os.read(session["file_descriptor"], max_read_bytes).decode()
 
                 except OSError:
 
                     # Something went wrong with the process.
                     # Retrieve whether and why it stopped and clean up, if necessary.
 
-                    result = os.waitid(os.P_PID, app.config["child_pid"], os.WEXITED|os.WNOWAIT)
+                    result = os.waitid(os.P_PID, session["child_pid"], os.WEXITED|os.WNOWAIT)
                     reason = None
 
                     # Convert si_code into readable name, as the os module defined it
@@ -148,27 +149,25 @@ def read_os_write_socketio():
 
                     if reason is None:
                         reason = "unknown"
-                    else:
+                    elif reason in ("EXITED", "KILLED", "DUMPED"):
 
-                        if reason in ("EXITED", "KILLED", "DUMPED"):
+                        # The process has ended, but remains as a zombie
+                        # until we read its return code.  Because os.wait()
+                        # blocks until a child process exits, we first
+                        # checked to make sure one was waiting for us.
 
-                            # The process has ended, but remains as a zombie
-                            # until we read its return code.  Because os.wait()
-                            # blocks until a child process exits, we first
-                            # checked to make sure one was waiting for us.
+                        os.wait()
 
-                            os.wait()
-
-                        #output = "Broken pipe: {}".format(result)
-                        output = "Broken pipe: {}".format(reason)
-                        logging.warn("Broken pipe: {} ({})".format(result, reason))
-                        return
+                    #output = "Broken pipe: {}".format(result)
+                    output = "Broken pipe: {}".format(reason)
+                    logging.warn("Broken pipe: {} ({})".format(result, reason))
+                    return
 
                 finally:
 
                     # In any case, submit the output to the browser.
 
-                    socketio.emit("pty-output", {"output": output}, namespace="/pty")
+                    socketio.emit("pty-output", {"output": output}, to=tty, namespace="/pty")
 
 # -----------------------------------------------------------------------------
 # Flask
@@ -199,8 +198,11 @@ def pty_input(data):
     Write to the pseudo-terminal.
     """
 
-    if app.config["file_descriptor"]:
-        os.write(app.config["file_descriptor"], data["input"].encode())
+    # rooms() automatically obtains client from request context.
+    for room in rooms():
+        session = app.config["sessions"].get(room)
+        if session and check_pid(session["child_pid"]):
+            os.write(session["file_descriptor"], data["input"].encode())
 
 
 @socketio.on("resize", namespace="/pty")
@@ -209,22 +211,59 @@ def resize(data):
     Account for window resize.
     """
 
-    if app.config["file_descriptor"]:
-        set_window_size(app.config["file_descriptor"], data["rows"], data["cols"])
+    # rooms() automatically obtains client from request context.
+    for room in rooms():
+        session = app.config["sessions"].get(room)
+        if session and check_pid(session["child_pid"]):
+            set_window_size(session["file_descriptor"], data["rows"], data["cols"])
 
 
-@socketio.on("connect", namespace="/pty")
-def connect():
+@socketio.on("request-tty", namespace="/pty")
+def request_tty(data):
     """
-    New client connection.
+    Request to be connected to a specific (or new) pseudo-terminal.
     """
 
-    logging.info(message_info(103, app.config["child_pid"]))
+    reattached = False
 
-    # If child process already running, don't start a new one.
+    if data["tty"] is not None:
+        logging.info("Client requested tty {}".format(data["tty"]))
+    else:
+        logging.info("Client requested new tty")
 
-    if app.config["child_pid"] and check_pid(app.config["child_pid"]):
+    # rooms() automatically obtains client from request context.
+    for room in rooms():
+        if room in app.config["sessions"]:
+            if data["tty"] is None and check_pid(app.config["sessions"][room]["child_pid"]):
+                logging.info(message_info(103, app.config["sessions"][room]["child_pid"]))
+                reattached = True
+                logging.info("Client reattached to {}".format(room))
+            else:
+                leave_room(room)
+
+    if reattached:
         return
+
+    if data["tty"] is not None:
+        if data["tty"] in app.config["sessions"] and check_pid(app.config["sessions"][data["tty"]]["child_pid"]):
+            socketio.emit("pty-output", {"output": "\r\n"}, to=request.sid, namespace="/pty")
+            join_room(data["tty"])
+            socketio.emit("pty-connect", {"tty": data["tty"]}, to=request.sid, namespace="/pty")
+            logging.info("Client attached to {}".format(data["tty"]))
+            return
+
+        else:
+            output = "The requested tty {} is not active. Connecting to a new tty.\r\n".format(data["tty"])
+            socketio.emit("pty-output", {"output": output}, to=request.sid, namespace="/pty")
+            logging.info("Client couldn't be attached to {}".format(data["tty"]))
+            #logging.info("Client couldn't be attached to {}\n  available ttys: {}\n  dead ttys: {}".format(
+            #    data["tty"],
+            #    list(map(lambda i: i[0], filter(lambda i: check_pid(i[1]["child_pid"]), app.config["sessions"].items()))),
+            #    list(map(lambda i: i[0], filter(lambda i: not check_pid(i[1]["child_pid"]), app.config["sessions"].items())))))
+
+    socketio.emit("pty-output", {"output": "\r\n"}, to=request.sid, namespace="/pty")
+
+    cmd = app.config["cmd"]
 
     # Start a new Pseudo Terminal (PTY) to communicate with.
     # This thread will duplicate into two, with the same state but one "parent"
@@ -237,20 +276,71 @@ def connect():
     # If we are the child process after the fork, replace this process with the shell.
 
     if child_pid == 0:
-        executable = app.config["cmd"][0]
-        os.fsync()
-        os.execvp(executable, app.config["cmd"])
+
+        # Unfortunately, we have been given an invalid file descriptor, we can't do this:
+        #tty = os.ttyname(file_descriptor)
+        # Instead, we know the slave file descriptior as STDOUT.
+
+        tty = os.ttyname(pty.STDOUT_FILENO)
+
+        # We print our newly found out name to stdout so the parent process can pick it up.
+
+        print(tty)
+
+        # Now we can replace ourselves with the shell.
+
+        executable = cmd[0]
+        #os.fsync()
+        os.execvp(executable, cmd)
 
     # If we are the parent process after the fork, remember the pid and
     # file descriptor and start forwarding data between it and socketio.
 
     else:
-        app.config["file_descriptor"] = file_descriptor
-        app.config["child_pid"] = child_pid
+
+        # Read tty name that child process reports,
+
+        tty = ''
+        last = None
+        while last != '\n':
+            last = os.read(file_descriptor, 1).decode()
+            if last not in [None, '\r', '\n']:
+                tty += last
+
+        if tty.startswith("/dev/"):
+            tty = tty[len("/dev/"):]
+
+        # If the tty is not an existing session, add it to our dictionary,
+        # set an initial window size and start the background task.
+
+        preexisting = tty in app.config["sessions"]
+        app.config["sessions"][tty] = dict(child_pid=child_pid, file_descriptor=file_descriptor, cmd=cmd)
         set_window_size(file_descriptor, 50, 50)
-        cmd = " ".join(shlex.quote(cmd_arg) for cmd_arg in app.config["cmd"])
-        socketio.start_background_task(target=read_os_write_socketio)
-        logging.info(message_info(104, child_pid, cmd))
+
+        if not preexisting:
+            socketio.start_background_task(target=lambda: read_os_write_socketio(tty))
+
+        join_room(tty)
+        socketio.emit("pty-connect", {"tty": tty}, to=request.sid, namespace="/pty")
+        cmd = " ".join(shlex.quote(cmd_arg) for cmd_arg in cmd)
+        logging.info(message_info(104, child_pid, cmd, tty))
+
+@socketio.on("connect", namespace="/pty")
+def connect():
+    """
+    New client connection.
+    """
+
+    socketio.emit("pty-output", {"output": "\r\nWelcome to Senzing xterm!\r\n"}, to=request.sid, namespace="/pty")
+
+    for room in rooms():
+        if room in app.config["sessions"]:
+            if child_pid(app.config["sessions"][room]["child_pid"]):
+                logging.info(message_info(103, app.config["sessions"][room]["child_pid"]))
+            else:
+                leave_room(room)
+
+    logging.info(message_info(103, None))
 
 # -----------------------------------------------------------------------------
 # Check if there is a process with a certain pid
@@ -267,8 +357,7 @@ def check_pid(pid):
         os.kill(pid, 0)
     except OSError:
         return False
-    else:
-        return True
+    return True
 
 # -----------------------------------------------------------------------------
 # Define argument parser

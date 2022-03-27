@@ -16,6 +16,7 @@ html {
     <span style="font-size: 1.4em;">Sen</span><span style="font-size: 1.4em; color: red;">z</span><span style="font-size: 1.4em;">ing</span>
     <span style="font-size: 1.4em;">xterm</span>&nbsp;&nbsp;&nbsp;
     <span style="font-size: small; float:right">Status: <span style="font-size: small;" id="status">connecting...</span></span>
+    <button id="copy-link" style="font-size: small; float: right; margin: 0 15px;" disabled>Copy link to this session</button>
     <script src="{{ url_for('static', filename='static/js/xterm.js') }}"></script>
     <script src="{{ url_for('static', filename='static/js/xterm-addon-attach.js') }}"></script>
     <script src="{{ url_for('static', filename='static/js/xterm-addon-fit.js') }}"></script>
@@ -34,12 +35,16 @@ html {
           scrollback: 10000,
     });
 
+    const params = new URLSearchParams(window.location.search)
+    var tty = params.get("tty")
+
     // Create socket.
 
     const socket = io('/pty', {
       path: '{{ io_connect_path }}'
     });
-    socket.emit("pty-input", {"input": "\n"})
+    socket.emit("request-tty", {"tty": tty})
+    //socket.emit("pty-input", {"input": "\n"})
 
     // Add features to terminal.
     // Reference: https://github.com/xtermjs/xterm.js/tree/master/addons
@@ -62,7 +67,6 @@ html {
     term.resize(15, 50)
     console.log(`size: ${term.cols} columns, ${term.rows} rows`)
     fitAddon.fit()
-    term.write("\nWelcome to Senzing xterm!\n\r")
 
     // Traffic from browser to host.
 
@@ -74,6 +78,23 @@ html {
 
     socket.on("pty-output", function(data){
       term.write(data.output)
+    })
+
+
+    const copy = document.getElementById("copy-link")
+    var url = new URL(document.location)
+    url.hash = ''
+
+    socket.on("pty-connect", function(data){
+      copy.disabled = false
+      copy.dataset.tty = data.tty
+    })
+
+    copy.addEventListener('click', function(e){
+      url.searchParams.set('tty', copy.dataset.tty)
+      // remove url encoding for easier identification
+      url.search = decodeURIComponent(url.search)
+      navigator.clipboard.writeText(url.href)
     })
 
     // Status.
