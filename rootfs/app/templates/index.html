@@ -85,15 +85,23 @@ html {
     var url = new URL(document.location)
     url.hash = ''
 
-    socket.on("pty-connect", function(data){
-      copy.disabled = false
-      copy.dataset.tty = data.tty
-    })
-
-    copy.addEventListener('click', function(e){
+    const update_url = function(){
       url.searchParams.set('tty', copy.dataset.tty)
       // remove url encoding for easier identification
       url.search = decodeURIComponent(url.search)
+    }
+
+    socket.on("pty-connect", function(data){
+      copy.dataset.tty = data.tty
+      copy.disabled = false
+      if (data.requestHonored) {
+        update_url()
+        history.replaceState(data, data.tty, url.search)
+      }
+    })
+
+    copy.addEventListener('click', function(e){
+      update_url()
       navigator.clipboard.writeText(url.href)
     })
 

@@ -168,6 +168,7 @@ def read_os_write_socketio(tty):
                     # In any case, submit the output to the browser.
 
                     socketio.emit("pty-output", {"output": output}, to=tty, namespace="/pty")
+                    session["last_line"] = (session["last_line"] + output).split("\n")[-1]
 
 # -----------------------------------------------------------------------------
 # Flask
@@ -245,10 +246,12 @@ def request_tty(data):
         return
 
     if data["tty"] is not None:
-        if data["tty"] in app.config["sessions"] and check_pid(app.config["sessions"][data["tty"]]["child_pid"]):
-            socketio.emit("pty-output", {"output": "\r\n"}, to=request.sid, namespace="/pty")
+        session = app.config["sessions"].get(data["tty"])
+        if session and check_pid(session["child_pid"]):
+            output = "\r\n" + session["last_line"]
+            socketio.emit("pty-output", {"output": output}, to=request.sid, namespace="/pty")
             join_room(data["tty"])
-            socketio.emit("pty-connect", {"tty": data["tty"]}, to=request.sid, namespace="/pty")
+            socketio.emit("pty-connect", {"tty": data["tty"], "requestHonored": True}, to=request.sid, namespace="/pty")
             logging.info("Client attached to {}".format(data["tty"]))
             return
 
@@ -314,7 +317,7 @@ def request_tty(data):
         # set an initial window size and start the background task.
 
         preexisting = tty in app.config["sessions"]
-        app.config["sessions"][tty] = dict(child_pid=child_pid, file_descriptor=file_descriptor, cmd=cmd)
+        app.config["sessions"][tty] = dict(child_pid=child_pid, file_descriptor=file_descriptor, cmd=cmd, last_line="")
         set_window_size(file_descriptor, 50, 50)
 
         if not preexisting:
