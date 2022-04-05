@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=debian:11.2-slim@sha256:4c25ffa6ef572cf0d57da8c634769a08ae94529f7de5be5587ec8ce7b9b50f9c
+ARG BASE_IMAGE=debian:11.3-slim@sha256:78fd65998de7a59a001d792fe2d3a6d2ea25b6f3f068e5c84881250373577414
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 # -----------------------------------------------------------------------------
@@ -9,7 +9,7 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2022-03-21
+ENV REFRESHED_AT=2022-04-01
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
@@ -70,7 +70,7 @@ RUN mkdir /tmp/fio \
 
 FROM ${BASE_IMAGE} AS runner
 
-ENV REFRESHED_AT=2022-03-21
+ENV REFRESHED_AT=2022-04-01
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
