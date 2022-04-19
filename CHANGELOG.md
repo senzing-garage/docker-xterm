@@ -6,11 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.6] - 2022-04-19
+
+### Changed in 1.2.6
+
+- Updated python dependencies in `requirements.txt`
+
 ## [1.2.5] - 2022-03-21
 
 ### Changed in 1.2.5
 
- - Support for `libcrypto` and `libssl`
+- Support for `libcrypto` and `libssl`
 
 ## [1.2.4] - 2022-02-03
 
