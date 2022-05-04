@@ -115,7 +115,7 @@ Inside the Docker container, Senzing artifacts will be located in `/opt/senzing`
    Example:
 
     ```console
-    export SENZING_DATA_VERSION_DIR=${SENZING_VOLUME}/data/2.0.0
+    export SENZING_DATA_VERSION_DIR=${SENZING_VOLUME}/data/3.0.0
     export SENZING_ETC_DIR=${SENZING_VOLUME}/etc
     export SENZING_G2_DIR=${SENZING_VOLUME}/g2
     export SENZING_VAR_DIR=${SENZING_VOLUME}/var
