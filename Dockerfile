@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=debian:11.3-slim@sha256:78fd65998de7a59a001d792fe2d3a6d2ea25b6f3f068e5c84881250373577414
+ARG BASE_IMAGE=debian:11.3-slim@sha256:fbaacd55d14bd0ae0c0441c2347217da77ad83c517054623357d1f9d07f79f5e
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 # -----------------------------------------------------------------------------
@@ -9,11 +9,11 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2022-04-01
+ENV REFRESHED_AT=2022-05-16
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.2.5"
+      Version="1.2.7"
 
 # Run as "root" for system installation.
 
@@ -70,11 +70,11 @@ RUN mkdir /tmp/fio \
 
 FROM ${BASE_IMAGE} AS runner
 
-ENV REFRESHED_AT=2022-04-01
+ENV REFRESHED_AT=2022-05-16
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.2.5"
+      Version="1.2.7"
 
 # Define health check.
 
@@ -147,7 +147,7 @@ USER 1001
 # Runtime environment variables.
 
 ENV LANGUAGE=C
-ENV LC_ALL=C
+ENV LC_ALL=C.UTF-8
 ENV LD_LIBRARY_PATH=/opt/senzing/g2/lib:/opt/senzing/g2/lib/debian:/opt/IBM/db2/clidriver/lib
 ENV ODBCSYSINI=/etc/opt/senzing
 ENV PATH=${PATH}:/opt/senzing/g2/python:/opt/IBM/db2/clidriver/adm:/opt/IBM/db2/clidriver/bin
@@ -157,11 +157,9 @@ ENV SENZING_DOCKER_LAUNCHED=true
 ENV SENZING_ETC_PATH=/etc/opt/senzing
 ENV SENZING_SKIP_DATABASE_PERFORMANCE_TEST=true
 ENV SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
-ENV SENZING_XTERM_SHOW_PERFORMANCE_WARNING=true
 ENV TERM=xterm
 
 # Runtime execution.
 
 WORKDIR /
-CMD ["/app/docker-entrypoint.sh"]
 CMD ["/app/xterm.py"]
