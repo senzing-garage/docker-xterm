@@ -1,0 +1,6 @@
+************** Senzing Diagnostics Container **************
+!!THIS IS NOT INTENDED FOR G2Loader.py!!
+
+This container is designed for debugging and basic tasks.
+To load data, use the stream-loader or REST API server.
+***********************************************************
