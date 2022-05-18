@@ -19,7 +19,7 @@ __version__ = "1.2.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
 __updated__ = '2021-08-30'
 
-SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/master/lists/senzing-product-ids.md
+SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/main/lists/senzing-product-ids.md
 log_format = '%(asctime)s %(message)s'
 
 # -----------------------------------------------------------------------------
