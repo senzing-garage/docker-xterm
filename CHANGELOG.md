@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Supports Senzing data 3.x
 - Updated Docker base to `debian:11.3-slim@sha256:fbaacd55d14bd0ae0c0441c2347217da77ad83c517054623357d1f9d07f79f5e`
 
-## [1.2.8] - 2022-05-19
+## [1.2.8] - 2022-05-04
 
 ### Changed in 1.2.8
 
