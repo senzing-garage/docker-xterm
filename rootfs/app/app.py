@@ -55,6 +55,7 @@ MESSAGE_DICTIONARY = {
     "102": "Senzing X-term serving on http://{0}:{1}",
     "103": "Connected. PID: {0}",
     "104": "Started background task. PID: {0} Running command: '{1}'",
+    "105": "Restarting terminal session. Environment reset.",
     "297": "Enter {0}",
     "298": "Exit {0}",
     "299": "{0}",
@@ -246,13 +247,17 @@ def connect():
     # Start a new Pseudo Terminal (PTY) to communicate with.
 
     (child_pid, file_descriptor) = pty.fork()
-    logging.info(message_info(999, "child_pid == {0}".format(child_pid)))
 
     # If child process, all output sent to the pseudo-terminal.
 
     if child_pid == 0:
         while True:
-            subprocess.run(APP.config["cmd"], check=True)
+            try:
+                subprocess.run(APP.config["cmd"], check=True)
+            except subprocess.CalledProcessError:
+                pass
+            finally:
+                logging.info(message_info(105))
 
     # If parent process,
 
