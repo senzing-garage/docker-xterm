@@ -27,7 +27,7 @@ from flask_socketio import SocketIO
 # Metadata
 
 __all__ = []
-__version__ = "1.2.0"  # See https://www.python.org/dev/peps/pep-0396/
+__version__ = "1.3.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
 __updated__ = '2022-05-19'
 
@@ -55,6 +55,7 @@ MESSAGE_DICTIONARY = {
     "102": "Senzing X-term serving on http://{0}:{1}",
     "103": "Connected. PID: {0}",
     "104": "Started background task. PID: {0} Running command: '{1}'",
+    "105": "Restarting terminal session. Environment reset.",
     "297": "Enter {0}",
     "298": "Exit {0}",
     "299": "{0}",
@@ -63,6 +64,7 @@ MESSAGE_DICTIONARY = {
     "500": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}E",
     "699": "{0}",
     "700": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}E",
+    "701": "OS error:  {0}",
     "899": "{0}",
     "900": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}D",
     "999": "{0}",
@@ -150,7 +152,8 @@ def read_os_write_socketio():
                 try:
                     output = os.read(APP.config["file_descriptor"], max_read_bytes).decode()
                 except OSError as err:
-                    logging.info(message_info(999, err))
+                    logging.error(message_error(701, err))
+                    output = str(err)
                 finally:
                     SOCKETIO.emit("pty-output", {"output": output}, namespace="/pty")
 
@@ -218,13 +221,17 @@ def connect():
     # Start a new Pseudo Terminal (PTY) to communicate with.
 
     (child_pid, file_descriptor) = pty.fork()
-    logging.info(message_info(999, "child_pid == {0}".format(child_pid)))
-
 
     # If child process, all output sent to the pseudo-terminal.
 
     if child_pid == 0:
-        subprocess.run(APP.config["cmd"], check=True)
+        while True:
+            try:
+                subprocess.run(APP.config["cmd"], check=True)
+            except subprocess.CalledProcessError:
+                pass
+            finally:
+                logging.info(message_info(105))
 
     # If parent process,
 
