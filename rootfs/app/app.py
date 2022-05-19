@@ -252,11 +252,7 @@ def connect():
 
     if child_pid == 0:
         while True:
-            try:
-                subprocess.run(APP.config["cmd"], check=True)
-                logging.info(message_info(999, ">>>>>>>>>>>>> Returned from subprocess.run()"))
-            except subprocess.CalledProcessError as err:
-                logging.info(message_info(999, err))
+            subprocess.run(APP.config["cmd"], check=True)
 
     # If parent process,
 
