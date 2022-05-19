@@ -1,5 +1,13 @@
 #!/usr/bin/python3
 
+'''
+# -----------------------------------------------------------------------------
+# xterm.py Example python skeleton.
+# -----------------------------------------------------------------------------
+'''
+
+# Import from standard library. https://docs.python.org/3/library/
+
 # -*- coding: utf-8 -*-
 import re
 import sys
