@@ -1,0 +1,13 @@
+[pylint]
+disable=
+    consider-using-f-string,
+    consider-using-sys-exit,
+    import-error,
+    line-too-long,
+    no-name-in-module,
+    too-many-branches,
+    too-many-locals,
+ignore=
+    __init__.py,
+notes=
+    FIXME,

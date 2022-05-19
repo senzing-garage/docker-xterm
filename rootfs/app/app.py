@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
+'''
+# -----------------------------------------------------------------------------
+# app.py
+# -----------------------------------------------------------------------------
+'''
+
+# Import from standard library. https://docs.python.org/3/library/
+
 import argparse
 import fcntl
-from flask import Flask, render_template
-from flask_socketio import SocketIO
 import logging
 import os
 import pty
@@ -11,16 +17,22 @@ import select
 import shlex
 import struct
 import subprocess
-import sys
 import termios
+
+# Import from https://pypi.org/
+
+from flask import Flask, render_template
+from flask_socketio import SocketIO
+
+# Metadata
 
 __all__ = []
 __version__ = "1.2.0"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
-__updated__ = '2021-08-30'
+__updated__ = '2022-05-19'
 
 SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/main/lists/senzing-product-ids.md
-log_format = '%(asctime)s %(message)s'
+LOG_FORMAT = '%(asctime)s %(message)s'
 
 # -----------------------------------------------------------------------------
 # Message handling
@@ -37,7 +49,7 @@ MESSAGE_WARN = 300
 MESSAGE_ERROR = 700
 MESSAGE_DEBUG = 900
 
-message_dictionary = {
+MESSAGE_DICTIONARY = {
     "100": "senzing-" + SENZING_PRODUCT_ID + "{0:04d}I",
     "101": "Senzing X-term version: {0} updated: {1}",
     "102": "Senzing X-term serving on http://{0}:{1}",
@@ -58,28 +70,34 @@ message_dictionary = {
 
 
 def message(index, *args):
+    ''' Return an instantiated message. '''
     index_string = str(index)
-    template = message_dictionary.get(index_string, "No message for index {0}.".format(index_string))
+    template = MESSAGE_DICTIONARY.get(index_string, "No message for index {0}.".format(index_string))
     return template.format(*args)
 
 
 def message_generic(generic_index, index, *args):
+    ''' Return a formatted message. '''
     return "{0} {1}".format(message(generic_index, index), message(index, *args))
 
 
 def message_info(index, *args):
+    ''' Return an info message. '''
     return message_generic(MESSAGE_INFO, index, *args)
 
 
 def message_warning(index, *args):
+    ''' Return a warning message. '''
     return message_generic(MESSAGE_WARN, index, *args)
 
 
 def message_error(index, *args):
+    ''' Return an error message. '''
     return message_generic(MESSAGE_ERROR, index, *args)
 
 
 def message_debug(index, *args):
+    ''' Return a debug message. '''
     return message_generic(MESSAGE_DEBUG, index, *args)
 
 # -----------------------------------------------------------------------------
@@ -89,22 +107,22 @@ def message_debug(index, *args):
 # Pull OS environment variables.
 
 
-url_prefix = os.environ.get("SENZING_BASE_URL_XTERM", "/")
-xterm_secret = os.environ.get("SENZING_XTERM_SECRET", "senzing-xterm-secret!")
+URL_PREFIX = os.environ.get("SENZING_BASE_URL_XTERM", "/")
+XTERM_SECRET = os.environ.get("SENZING_XTERM_SECRET", "senzing-xterm-secret!")
 
 # Synthesize variables.
 
-static_url_path = url_prefix[:-1]
-socketio_path = "{0}socket.io".format(url_prefix[1:])
-io_connect_path = "{0}socket.io".format(url_prefix)
+STATIC_URL_PATH = URL_PREFIX[:-1]
+SOCKETIO_PATH = "{0}socket.io".format(URL_PREFIX[1:])
+IO_CONNECT_PATH = "{0}socket.io".format(URL_PREFIX)
 
 # Initialize Flask instance and SocketIO instance.
 
-app = Flask(__name__, static_folder=".", static_url_path=static_url_path)
-app.config["SECRET_KEY"] = xterm_secret
-app.config["file_descriptor"] = None
-app.config["child_pid"] = None
-socketio = SocketIO(app, path=socketio_path)
+APP = Flask(__name__, static_folder=".", static_url_path=STATIC_URL_PATH)
+APP.config["SECRET_KEY"] = XTERM_SECRET
+APP.config["file_descriptor"] = None
+APP.config["child_pid"] = None
+SOCKETIO = SocketIO(APP, path=SOCKETIO_PATH)
 
 
 def set_window_size(file_descriptor, row, col, xpix=0, ypix=0):
@@ -123,30 +141,40 @@ def read_os_write_socketio():
 
     max_read_bytes = 1024 * 20
     while True:
-        socketio.sleep(0.01)
-        if app.config["file_descriptor"]:
+        SOCKETIO.sleep(0.01)
+        if APP.config["file_descriptor"]:
             timeout_sec = 0
-            (data_ready, _, _) = select.select([app.config["file_descriptor"]], [], [], timeout_sec)
+            (data_ready, _, _) = select.select([APP.config["file_descriptor"]], [], [], timeout_sec)
+            output = ""
             if data_ready:
-                output = os.read(app.config["file_descriptor"], max_read_bytes).decode()
-                socketio.emit("pty-output", {"output": output}, namespace="/pty")
+                try:
+                    output = os.read(APP.config["file_descriptor"], max_read_bytes).decode()
+                except OSError as err:
+                    logging.info(message_info(999, err))
+                finally:
+                    SOCKETIO.emit("pty-output", {"output": output}, namespace="/pty")
 
 # -----------------------------------------------------------------------------
 # Flask
 # -----------------------------------------------------------------------------
 
-non_canonical_route = static_url_path
-if not non_canonical_route:
-    non_canonical_route = non_canonical_route + "/"
 
-@app.route(url_prefix)
+NON_CANONICAL_ROUTE = STATIC_URL_PATH
+if not NON_CANONICAL_ROUTE:
+    NON_CANONICAL_ROUTE = NON_CANONICAL_ROUTE + "/"
+
+
+@APP.route(URL_PREFIX)
 # the above _should_ redirect a non-canonical URL to it's canonical version
 # however, it doesn't seem to work.  So this:
-@app.route(non_canonical_route)
-def index():
+@APP.route(NON_CANONICAL_ROUTE)
+def index_page():
+    """
+    Instantiate the root page.
+    """
     return render_template(
         "index.html",
-        io_connect_path=io_connect_path
+        io_connect_path=IO_CONNECT_PATH
     )
 
 # -----------------------------------------------------------------------------
@@ -154,56 +182,58 @@ def index():
 # -----------------------------------------------------------------------------
 
 
-@socketio.on("pty-input", namespace="/pty")
+@SOCKETIO.on("pty-input", namespace="/pty")
 def pty_input(data):
     """
     Write to the pseudo-terminal.
     """
 
-    if app.config["file_descriptor"]:
-        os.write(app.config["file_descriptor"], data["input"].encode())
+    if APP.config["file_descriptor"]:
+        os.write(APP.config["file_descriptor"], data["input"].encode())
 
 
-@socketio.on("resize", namespace="/pty")
+@SOCKETIO.on("resize", namespace="/pty")
 def resize(data):
     """
     Account for window resize.
     """
 
-    if app.config["file_descriptor"]:
-        set_window_size(app.config["file_descriptor"], data["rows"], data["cols"])
+    if APP.config["file_descriptor"]:
+        set_window_size(APP.config["file_descriptor"], data["rows"], data["cols"])
 
 
-@socketio.on("connect", namespace="/pty")
+@SOCKETIO.on("connect", namespace="/pty")
 def connect():
     """
     New client connection.
     """
 
-    logging.info(message_info(103, app.config["child_pid"]))
+    logging.info(message_info(103, APP.config["child_pid"]))
 
     # If child process already running, don't start a new one.
 
-    if app.config["child_pid"]:
+    if APP.config["child_pid"]:
         return
 
     # Start a new Pseudo Terminal (PTY) to communicate with.
 
     (child_pid, file_descriptor) = pty.fork()
+    logging.info(message_info(999, "child_pid == {0}".format(child_pid)))
+
 
     # If child process, all output sent to the pseudo-terminal.
 
     if child_pid == 0:
-        subprocess.run(app.config["cmd"])
+        subprocess.run(APP.config["cmd"], check=True)
 
     # If parent process,
 
     else:
-        app.config["file_descriptor"] = file_descriptor
-        app.config["child_pid"] = child_pid
+        APP.config["file_descriptor"] = file_descriptor
+        APP.config["child_pid"] = child_pid
         set_window_size(file_descriptor, 50, 50)
-        cmd = " ".join(shlex.quote(cmd_arg) for cmd_arg in app.config["cmd"])
-        socketio.start_background_task(target=read_os_write_socketio)
+        cmd = " ".join(shlex.quote(cmd_arg) for cmd_arg in APP.config["cmd"])
+        SOCKETIO.start_background_task(target=read_os_write_socketio)
         logging.info(message_info(104, child_pid, cmd))
 
 # -----------------------------------------------------------------------------
@@ -263,6 +293,9 @@ def get_parser():
 
 
 def main():
+    """
+    Main process.
+    """
 
     # Configure logging.
 
@@ -278,7 +311,7 @@ def main():
 
     log_level_parameter = os.getenv("SENZING_LOG_LEVEL", "info").lower()
     log_level = log_level_map.get(log_level_parameter, logging.INFO)
-    logging.basicConfig(format=log_format, level=log_level)
+    logging.basicConfig(format=LOG_FORMAT, level=log_level)
 
     # Parse input.
 
@@ -289,8 +322,8 @@ def main():
     logging.info(message_info(101, __version__, __updated__))
     logging.info(message_info(102, args.host, args.port))
 
-    app.config["cmd"] = [args.command] + shlex.split(args.cmd_args)
-    socketio.run(app, debug=args.debug, port=args.port, host=args.host)
+    APP.config["cmd"] = [args.command] + shlex.split(args.cmd_args)
+    SOCKETIO.run(APP, debug=args.debug, port=args.port, host=args.host)
 
 
 if __name__ == "__main__":
