@@ -1,12 +1,12 @@
 [pylint]
 disable=
-    no-name-in-module,
-    line-too-long,
-    too-many-branches,
-    too-many-locals,
+    consider-using-f-string,
     consider-using-sys-exit,
     import-error,
-    consider-using-f-string,
+    line-too-long,
+    no-name-in-module,
+    too-many-branches,
+    too-many-locals,
 ignore=
     __init__.py,
 notes=

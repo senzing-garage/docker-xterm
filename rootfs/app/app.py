@@ -212,12 +212,14 @@ def connect():
 
     # If child process already running, don't start a new one.
 
-    # if APP.config["child_pid"]:
-    #     return
+    if APP.config["child_pid"]:
+        return
 
     # Start a new Pseudo Terminal (PTY) to communicate with.
 
     (child_pid, file_descriptor) = pty.fork()
+    logging.info(message_info(999, "child_pid == {0}".format(child_pid)))
+
 
     # If child process, all output sent to the pseudo-terminal.
 
