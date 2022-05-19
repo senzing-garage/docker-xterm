@@ -145,6 +145,7 @@ def read_os_write_socketio():
         if APP.config["file_descriptor"]:
             timeout_sec = 0
             (data_ready, _, _) = select.select([APP.config["file_descriptor"]], [], [], timeout_sec)
+            output = ""
             if data_ready:
                 try:
                     output = os.read(APP.config["file_descriptor"], max_read_bytes).decode()
@@ -221,7 +222,7 @@ def connect():
     # If child process, all output sent to the pseudo-terminal.
 
     if child_pid == 0:
-        subprocess.run(APP.config["cmd"])
+        subprocess.run(APP.config["cmd"], check=True)
 
     # If parent process,
 

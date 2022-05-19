@@ -4,6 +4,9 @@ disable=
     line-too-long,
     too-many-branches,
     too-many-locals,
+    consider-using-sys-exit,
+    import-error,
+    consider-using-f-string,
 ignore=
     __init__.py,
 notes=
