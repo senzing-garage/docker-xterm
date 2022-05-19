@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2022-05-19
+
+### Changed in 1.3.0
+
+- Restarts on `exit`
+- Added Pylint checks
+- Supports Senzing data 3.x
+- Updated Docker base to `debian:11.3-slim@sha256:fbaacd55d14bd0ae0c0441c2347217da77ad83c517054623357d1f9d07f79f5e`
+
+## [1.2.8] - 2022-05-19
+
+### Changed in 1.2.8
+
+- Last version supporting Senzing data 2.0.0
 
 ## [1.2.7] - 2022-05-02
 
