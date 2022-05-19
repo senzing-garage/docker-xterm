@@ -124,6 +124,27 @@ APP.config["file_descriptor"] = None
 APP.config["child_pid"] = None
 SOCKETIO = SocketIO(APP, path=SOCKETIO_PATH)
 
+EXIT_TERMS = [
+    "CLD_EXITED",
+    "CLD_KILLED",
+    "CLD_DUMPED",
+    "CLD_TRAPPED",
+    "CLD_STOPPED",
+    "CLD_CONTINUED"
+]
+EXIT_CODES = {}
+for exit_term in EXIT_TERMS:
+    EXIT_CODES[os.__getattribute__(exit_term)] = exit_term
+
+EXIT_TERMS = [
+    "CLD_EXITED",
+    "CLD_KILLED",
+    "CLD_DUMPED",
+]
+EXIT_CODES_FOR_WAIT = {}
+for exit_term in EXIT_TERMS:
+    EXIT_CODES_FOR_WAIT[os.__getattribute__(exit_term)] = exit_term
+
 
 def set_window_size(file_descriptor, row, col, xpix=0, ypix=0):
     """
@@ -150,7 +171,14 @@ def read_os_write_socketio():
                 try:
                     output = os.read(APP.config["file_descriptor"], max_read_bytes).decode()
                 except OSError as err:
-                    logging.info(message_info(999, err))
+                    output = "Broken pipe: {0}"
+                    if APP.config["child_pid"]:
+                        result = os.waitid(os.P_PID, APP.config["child_pid"], os.WEXITED | os.WNOWAIT)
+                        if result.si_code in EXIT_CODES.keys():
+                            if result.si_code in EXIT_CODES_FOR_WAIT.keys():
+                                os.wait()
+                            output = output.format(EXIT_CODES.get(result.si_code))
+                    logging.info(message_info(999, output))
                 finally:
                     SOCKETIO.emit("pty-output", {"output": output}, namespace="/pty")
 
@@ -220,11 +248,15 @@ def connect():
     (child_pid, file_descriptor) = pty.fork()
     logging.info(message_info(999, "child_pid == {0}".format(child_pid)))
 
-
     # If child process, all output sent to the pseudo-terminal.
 
     if child_pid == 0:
-        subprocess.run(APP.config["cmd"], check=True)
+        while True:
+            try:
+                subprocess.run(APP.config["cmd"], check=True)
+                logging.info(message_info(999, ">>>>>>>>>>>>> Returned from subprocess.run()"))
+            except subprocess.CalledProcessError as err:
+                logging.info(message_info(999, err))
 
     # If parent process,
 
