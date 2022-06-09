@@ -9,11 +9,11 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2022-05-16
+ENV REFRESHED_AT=2022-06-09
 
 LABEL Name="senzing/xterm-builder" \
       Maintainer="support@senzing.com" \
-      Version="1.3.0"
+      Version="1.3.2"
 
 # Run as "root" for system installation.
 
@@ -70,11 +70,11 @@ RUN mkdir /tmp/fio \
 
 FROM ${BASE_IMAGE} AS runner
 
-ENV REFRESHED_AT=2022-05-16
+ENV REFRESHED_AT=2022-06-09
 
 LABEL Name="senzing/xterm" \
       Maintainer="support@senzing.com" \
-      Version="1.3.0"
+      Version="1.3.2"
 
 # Define health check.
 
@@ -146,8 +146,10 @@ USER 1001
 
 # Runtime environment variables.
 
+ENV LANG=C.UTF-8
 ENV LANGUAGE=C
 ENV LC_ALL=C.UTF-8
+ENV LC_CTYPE=C.UTF-8
 ENV LD_LIBRARY_PATH=/opt/senzing/g2/lib:/opt/senzing/g2/lib/debian:/opt/IBM/db2/clidriver/lib
 ENV ODBCSYSINI=/etc/opt/senzing
 ENV PATH=${PATH}:/opt/senzing/g2/python:/opt/IBM/db2/clidriver/adm:/opt/IBM/db2/clidriver/bin
