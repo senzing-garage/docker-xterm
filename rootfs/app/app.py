@@ -150,7 +150,7 @@ def read_os_write_socketio():
             output = ""
             if data_ready:
                 try:
-                    output = os.read(APP.config["file_descriptor"], max_read_bytes).decode('UTF-16')
+                    output = os.read(APP.config["file_descriptor"], max_read_bytes).decode()
                 except OSError as err:
                     logging.error(message_error(701, err))
                     output = str(err)
