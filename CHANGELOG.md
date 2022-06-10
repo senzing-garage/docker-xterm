@@ -6,11 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.2] - 2022-06-08
+## [1.3.2] - 2022-06-10
 
 ### Changed in 1.3.2
 
-- Encoding changed from "UTF-8" to "UTF-16"
+- Ignore "UTF-8" errors output from container
+- In `Dockerfile` add "LANG` and `LC_CTYPE`
 
 ## [1.3.1] - 2022-06-08
 
