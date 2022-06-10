@@ -29,7 +29,7 @@ from flask_socketio import SocketIO
 __all__ = []
 __version__ = "1.3.2"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
-__updated__ = '2022-06-09'
+__updated__ = '2022-06-10'
 
 SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/main/lists/senzing-product-ids.md
 LOG_FORMAT = '%(asctime)s %(message)s'
@@ -150,7 +150,7 @@ def read_os_write_socketio():
             output = ""
             if data_ready:
                 try:
-                    output = os.read(APP.config["file_descriptor"], max_read_bytes).decode()
+                    output = os.read(APP.config["file_descriptor"], max_read_bytes).decode('utf-8', 'ignore')
                 except OSError as err:
                     logging.error(message_error(701, err))
                     output = str(err)
