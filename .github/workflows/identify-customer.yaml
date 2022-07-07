@@ -30,6 +30,6 @@ jobs:
         env:
           BOOL: ${{ contains( env.MEMBER_LIST, env.CREATOR ) }}
         if: ${{ env.BOOL == 'false' }}
-        uses: andymckay/labeler@1.0.3
+        uses: andymckay/labeler@1.0.4
         with:
           add-labels: "customer-submission"
