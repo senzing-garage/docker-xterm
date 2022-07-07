@@ -4,7 +4,7 @@ eventlet==0.33.0
 Flask-SocketIO==5.1.1
 Flask==1.0.4
 fuzzywuzzy==0.18.0
-itsdangerous==1.1.0
+itsdangerous==2.1.2
 Jinja2==2.11.3
 MarkupSafe==1.1.1
 pandas==1.4.3
