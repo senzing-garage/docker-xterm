@@ -5,7 +5,7 @@ Flask-SocketIO==5.1.1
 Flask==1.0.4
 fuzzywuzzy==0.18.0
 itsdangerous==1.1.0
-Jinja2==2.11.3
+Jinja2==3.1.2
 MarkupSafe==2.1.1
 pandas==1.4.3
 psutil==5.9.0
