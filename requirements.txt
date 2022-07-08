@@ -10,7 +10,7 @@ psutil==5.9.1
 psycopg2==2.9.3
 PTable==0.9.2
 pyodbc==4.0.32
-PySnooper==0.5.0
+PySnooper==1.1.1
 python-engineio==4.3.3
 python-Levenshtein==0.12.2
 python-socketio==5.7.0
