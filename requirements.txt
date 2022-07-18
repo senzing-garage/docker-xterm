@@ -13,6 +13,6 @@ pyodbc==4.0.34
 PySnooper==1.1.1
 python-engineio==4.3.3
 python-Levenshtein==0.12.2
-python-socketio==5.7.0
+python-socketio==5.7.1
 setuptools==63.2.0
 six==1.16.0
