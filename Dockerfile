@@ -144,7 +144,6 @@ USER 1001
 
 ENV LC_ALL=C.UTF-8 \
     LC_CTYPE=C.UTF-8 \
-    SENZING_ETC_PATH=/etc/opt/senzing \
     SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
 
 # Runtime execution.
