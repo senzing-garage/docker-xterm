@@ -94,7 +94,6 @@ RUN apt-get update \
       htop \
       iotop \
       jq \
-      less \
       net-tools \
       openssh-server \
       postgresql-client \
@@ -142,8 +141,7 @@ USER 1001
 
 # Runtime environment variables.
 
-ENV LC_ALL=C.UTF-8 \
-    LC_CTYPE=C.UTF-8 \
+ENV LC_CTYPE=C.UTF-8 \
     SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
 
 # Runtime execution.
