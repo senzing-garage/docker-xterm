@@ -1,5 +1,10 @@
-ARG BASE_IMAGE=debian:11.4-slim@sha256:a811e62769a642241b168ac34f615fb02da863307a14c4432cea8e5a0f9782b8
+ARG BASE_IMAGE=senzing/senzingapi-tools:3.2.0
+
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
+
+ARG IMAGE_NAME="senzing/xterm"
+ARG IMAGE_MAINTAINER="support@senzing.com"
+ARG IMAGE_VERSION="1.4.0"
 
 # -----------------------------------------------------------------------------
 # Stage: builder
@@ -9,11 +14,7 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2022-08-12
-
-LABEL Name="senzing/xterm-builder" \
-      Maintainer="support@senzing.com" \
-      Version="1.3.2"
+ENV REFRESHED_AT=2022-08-26
 
 # Run as "root" for system installation.
 
@@ -70,11 +71,13 @@ RUN mkdir /tmp/fio \
 
 FROM ${BASE_IMAGE} AS runner
 
-ENV REFRESHED_AT=2022-08-12
+ARG IMAGE_NAME
+ARG IMAGE_MAINTAINER
+ARG IMAGE_VERSION
 
-LABEL Name="senzing/xterm" \
-      Maintainer="support@senzing.com" \
-      Version="1.3.2"
+LABEL Name=${IMAGE_NAME} \
+      Maintainer=${IMAGE_MAINTAINER} \
+      Version=${IMAGE_VERSION}
 
 # Define health check.
 
@@ -88,25 +91,18 @@ USER root
 
 RUN apt-get update \
  && apt-get -y install \
-      curl \
       elvis-tiny \
       htop \
       iotop \
       jq \
-      less \
-      libpq-dev \
-      libssl1.1 \
       net-tools \
-      odbcinst \
       openssh-server \
       postgresql-client \
       procps \
       python3-dev \
       python3-pip \
-      sqlite3 \
       strace \
       tree \
-      unixodbc-dev \
       unzip \
       wget \
       zip \
@@ -146,20 +142,8 @@ USER 1001
 
 # Runtime environment variables.
 
-ENV LANG=C.UTF-8
-ENV LANGUAGE=C
-ENV LC_ALL=C.UTF-8
-ENV LC_CTYPE=C.UTF-8
-ENV LD_LIBRARY_PATH=/opt/senzing/g2/lib:/opt/senzing/g2/lib/debian:/opt/IBM/db2/clidriver/lib
-ENV ODBCSYSINI=/etc/opt/senzing
-ENV PATH=${PATH}:/opt/senzing/g2/python:/opt/IBM/db2/clidriver/adm:/opt/IBM/db2/clidriver/bin
-ENV PYTHONPATH=/opt/senzing/g2/python
-ENV PYTHONUNBUFFERED=1
-ENV SENZING_DOCKER_LAUNCHED=true
-ENV SENZING_ETC_PATH=/etc/opt/senzing
-ENV SENZING_SKIP_DATABASE_PERFORMANCE_TEST=true
-ENV SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
-ENV TERM=xterm
+ENV LC_CTYPE=C.UTF-8 \
+    SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
 
 # Runtime execution.
 
