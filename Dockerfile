@@ -1,4 +1,5 @@
 ARG BASE_IMAGE=senzing/senzingapi-tools:3.2.0
+
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 ARG IMAGE_NAME="senzing/xterm"
