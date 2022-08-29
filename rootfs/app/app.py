@@ -29,7 +29,7 @@ from flask_socketio import SocketIO
 __all__ = []
 __version__ = "1.3.2"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
-__updated__ = '2022-06-10'
+__updated__ = '2022-08-29'
 
 SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/main/lists/senzing-product-ids.md
 LOG_FORMAT = '%(asctime)s %(message)s'
@@ -330,7 +330,7 @@ def main():
     logging.info(message_info(102, args.host, args.port))
 
     APP.config["cmd"] = [args.command] + shlex.split(args.cmd_args)
-    SOCKETIO.run(APP, debug=args.debug, port=args.port, host=args.host)
+    SOCKETIO.run(APP, debug=args.debug, port=args.port, host=args.host, allow_unsafe_werkzeug=True)
 
 
 if __name__ == "__main__":
