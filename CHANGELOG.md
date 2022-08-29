@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [1.4.1] - 2022-08-29
+
+### Changed in 1.4.1
+
+- Fix required by `Flask-SocketIO==5.3.0`
+
 ## [1.4.0] - 2022-08-24
 
 ### Changed in 1.4.0
