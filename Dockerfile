@@ -47,7 +47,7 @@ RUN apt-get update \
       pkg-config \
       unzip \
       wget \
-      && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/*
 
 # Work around until Debian repos catch up to modern versions of fio.
 
