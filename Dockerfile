@@ -1,5 +1,4 @@
 ARG BASE_IMAGE=senzing/senzingapi-tools:3.2.0
-
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 ARG IMAGE_NAME="senzing/xterm"
@@ -40,6 +39,8 @@ RUN npm config set loglevel warn \
 
 # Install packages via apt for building fio.
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update \
  && apt-get -y install \
       gcc \
@@ -53,9 +54,9 @@ RUN apt-get update \
 
 RUN mkdir /tmp/fio \
  && cd /tmp/fio \
- && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.27.zip \
- && unzip fio-3.27.zip \
- && cd fio-fio-3.27/ \
+ && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.30.zip \
+ && unzip fio-3.30.zip \
+ && cd fio-fio-3.30/ \
  && ./configure \
  && make \
  && make install \
@@ -109,7 +110,6 @@ RUN apt-get update \
       unzip \
       wget \
       zip \
- && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # Install packages via pip.
