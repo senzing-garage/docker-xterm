@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [markdownlint](https://dlaa.me/markdownlint/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.4.2] - 2022-09-23
 
--
+### Changed in 1.4.2
+
+- Migrated from pip `pyodbc` to apt `python3-pyodbc`
+- Updated to fio-3.30
+- Trimmed `requirements.txt`
 
 ## [1.4.1] - 2022-08-29
 
