@@ -1,5 +1,4 @@
 ARG BASE_IMAGE=senzing/senzingapi-tools:3.2.0
-
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 ARG IMAGE_NAME="senzing/xterm"
@@ -14,7 +13,7 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2022-08-29
+ENV REFRESHED_AT=2022-09-23
 
 # Run as "root" for system installation.
 
@@ -40,6 +39,8 @@ RUN npm config set loglevel warn \
 
 # Install packages via apt for building fio.
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update \
  && apt-get -y install \
       gcc \
@@ -47,15 +48,15 @@ RUN apt-get update \
       pkg-config \
       unzip \
       wget \
-      && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/*
 
 # Work around until Debian repos catch up to modern versions of fio.
 
 RUN mkdir /tmp/fio \
  && cd /tmp/fio \
- && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.27.zip \
- && unzip fio-3.27.zip \
- && cd fio-fio-3.27/ \
+ && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.30.zip \
+ && unzip fio-3.30.zip \
+ && cd fio-fio-3.30/ \
  && ./configure \
  && make \
  && make install \
@@ -89,6 +90,8 @@ USER root
 
 # Install packages via apt.
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update \
  && apt-get -y install \
       elvis-tiny \
@@ -101,12 +104,12 @@ RUN apt-get update \
       procps \
       python3-dev \
       python3-pip \
+      python3-pyodbc \
       strace \
       tree \
       unzip \
       wget \
       zip \
- && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # Install packages via pip.
