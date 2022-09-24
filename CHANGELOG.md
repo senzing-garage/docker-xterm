@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [1.4.2] - 2022-09-23
+
+### Changed in 1.4.2
+
+- Migrated from pip `pyodbc` to apt `python3-pyodbc`
+- In `Dockerfile`, updated to fio-3.30
+- Trimmed `requirements.txt`
+
 ## [1.4.1] - 2022-08-29
 
 ### Changed in 1.4.1
