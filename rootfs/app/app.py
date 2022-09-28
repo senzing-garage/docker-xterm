@@ -27,9 +27,9 @@ from flask_socketio import SocketIO
 # Metadata
 
 __all__ = []
-__version__ = "1.4.2"  # See https://www.python.org/dev/peps/pep-0396/
+__version__ = "1.4.3"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
-__updated__ = '2022-09-23'
+__updated__ = '2022-09-28'
 
 SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/main/lists/senzing-product-ids.md
 LOG_FORMAT = '%(asctime)s %(message)s'

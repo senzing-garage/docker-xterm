@@ -3,7 +3,7 @@ ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 ARG IMAGE_NAME="senzing/xterm"
 ARG IMAGE_MAINTAINER="support@senzing.com"
-ARG IMAGE_VERSION="1.4.2"
+ARG IMAGE_VERSION="1.4.3"
 
 # -----------------------------------------------------------------------------
 # Stage: builder
