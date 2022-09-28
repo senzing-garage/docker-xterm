@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [1.4.3] - 2022-09-28
+
+### Changed in 1.4.3
+
+- In `Dockerfile`, updated FROM instruction to `senzing/senzingapi-tools:3.3.0`
+- In `requirements.txt`, updated:
+  - setuptools==65.4.0
+
 ## [1.4.2] - 2022-09-23
 
 ### Changed in 1.4.2
