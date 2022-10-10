@@ -8,4 +8,4 @@ PySnooper==1.1.1
 python-engineio==4.3.4
 python-socketio==5.7.1
 setuptools==65.4.1
-VisiData==2.10.1
+VisiData==2.10.2
