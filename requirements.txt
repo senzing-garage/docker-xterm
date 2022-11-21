@@ -1,7 +1,7 @@
 csvkit==1.0.7
 Flask-SocketIO==5.3.1
 Flask==2.2.2
-orjson==3.8.1
+orjson==3.8.2
 pandas==1.5.1
 prettytable==3.5.0
 PySnooper==1.1.1
