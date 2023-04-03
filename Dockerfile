@@ -1,9 +1,9 @@
-ARG BASE_IMAGE=senzing/senzingapi-tools:3.4.0
+ARG BASE_IMAGE=senzing/senzingapi-tools:3.5.0
 ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 ARG IMAGE_NAME="senzing/xterm"
 ARG IMAGE_MAINTAINER="support@senzing.com"
-ARG IMAGE_VERSION="1.4.6"
+ARG IMAGE_VERSION="1.4.7"
 
 # -----------------------------------------------------------------------------
 # Stage: builder
@@ -13,7 +13,7 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2023-01-12
+ENV REFRESHED_AT=2023-04-03
 
 # Run as "root" for system installation.
 
