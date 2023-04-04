@@ -12,7 +12,7 @@ Behind the scenes, keystrokes typed into the web-based Xterm window are sent via
 to be executed within the container.  The results of the command are sent via socket back to the web Xterm window.
 
 With the Senzing binaries mounted to the running `senzing/xterm` container as described below,
-Senzing commands such as `G2Command.py`, `G2Explorer.py`, `G2Loader.py`, etc.
+Senzing commands such as `G2Command.py`, `G2Explorer.py`, etc.
 can be executed.
 
 To access files outside of the container, files should be place on mounted volumes.
@@ -21,10 +21,7 @@ For instance, the `/var/opt/senzing` directory as shown below.
 ### Contents
 
 1. [Expectations](#expectations)
-1. [Demonstrate using Docker](#demonstrate-using-docker)
-    1. [Prerequisites for Docker](#prerequisites-for-docker)
-    1. [Run Docker container](#run-docker-container)
-    1. [View XTerm](#view-xterm)
+1. [Use](#use)
 1. [Related artifacts](#related-artifacts)
 1. [References](#references)
 1. [License](#license)
@@ -36,15 +33,11 @@ For instance, the `/var/opt/senzing` directory as shown below.
 - **Background knowledge:** This repository assumes a working knowledge of:
   - [Docker](https://github.com/Senzing/knowledge-base/blob/main/WHATIS/docker.md)
 
-## Demonstrate using Docker
+## Use
 
-### Prerequisites for Docker
+### Prerequisites
 
-:thinking: The following tasks need to be complete before proceeding.
-These are "one-time tasks" which may already have been completed.
-
-1. The following software programs need to be installed:
-    1. [docker](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-docker.md)
+1. [docker](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-docker.md)
 
 ### Run Docker container
 
