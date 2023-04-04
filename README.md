@@ -11,12 +11,9 @@ The `senzing/xterm` container is a web application that creates the facade of a 
 Behind the scenes, keystrokes typed into the web-based Xterm window are sent via socket to the running docker container
 to be executed within the container.  The results of the command are sent via socket back to the web Xterm window.
 
-With the Senzing binaries mounted to the running `senzing/xterm` container as described below,
-Senzing commands such as `G2Command.py`, `G2Explorer.py`, etc.
-can be executed.
+Senzing commands such as `G2Command.py`, `G2Explorer.py`, etc. can be executed in Xterm.
 
-To access files outside of the container, files should be place on mounted volumes.
-For instance, the `/var/opt/senzing` directory as shown below.
+To access files outside of the container, files should be place on volumes mounted to docker container.
 
 ### Contents
 
@@ -65,7 +62,9 @@ The web-based Senzing X-term can be used to run Senzing command-line programs.
 1. If `SENZING_XTERM_PORT` was set to `8254`,
    Senzing X-term will be viewable at
    [localhost:8254](http://localhost:8254).
-   In general, visit the web address having the following format:
+
+
+1. In general, visit the web address having the following format:
    `http://${SENZING_XTERM_HOST}:${SENZING_XTERM_PORT}`
    Example:
 
