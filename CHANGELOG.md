@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [1.4.8] - 2023-04-04
+
+### Changed in 1.4.8
+
+- Fixed issue with python environment not finding `flask`
+
 ## [1.4.7] - 2023-04-03
 
 ### Changed in 1.4.7
