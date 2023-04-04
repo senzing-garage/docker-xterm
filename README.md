@@ -31,15 +31,10 @@ For instance, the `/var/opt/senzing` directory as shown below.
     1. [Docker user](#docker-user)
     1. [Run Docker container](#run-docker-container)
     1. [View XTerm](#view-xterm)
-1. [Develop](#develop)
-    1. [Prerequisites for development](#prerequisites-for-development)
-    1. [Clone repository](#clone-repository)
-    1. [Build Docker image](#build-docker-image)
 1. [Examples](#examples)
     1. [Examples of Docker](#examples-of-docker)
 1. [Advanced](#advanced)
     1. [Configuration](#configuration)
-1. [Errors](#errors)
 1. [References](#references)
 1. [License](#license)
 
@@ -84,9 +79,6 @@ These are "one-time tasks" which may already have been completed.
 
 1. The following software programs need to be installed:
     1. [docker](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-docker.md)
-1. [Install Senzing using Docker](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-senzing-using-docker.md)
-    1. If using Docker with a previous "system install" of Senzing,
-       see [how to use Docker with system install](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/use-docker-with-system-install.md).
 1. [Configure Senzing database using Docker](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/configure-senzing-database-using-docker.md)
 1. [Configure Senzing using Docker](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/configure-senzing-using-docker.md)
 
@@ -209,12 +201,7 @@ Unset `*_PARAMETER` environment variables have no effect on the
       --rm \
       --publish ${SENZING_XTERM_PORT}:5000 \
       --tty \
-      --volume ${SENZING_DATA_VERSION_DIR}:/opt/senzing/data \
-      --volume ${SENZING_ETC_DIR}:/etc/opt/senzing \
-      --volume ${SENZING_G2_DIR}:/opt/senzing/g2 \
       --volume ${SENZING_VAR_DIR}:/var/opt/senzing \
-      ${SENZING_NETWORK_PARAMETER} \
-      ${SENZING_RUNAS_USER_PARAMETER} \
       senzing/xterm
     ```
 
@@ -242,62 +229,6 @@ The web-based Senzing X-term can be used to run Senzing command-line programs.
 
 1. For more examples of use, see [Examples of Docker](#examples-of-docker).
 
-## Develop
-
-The following instructions are used when modifying and building the Docker image.
-
-### Prerequisites for development
-
-:thinking: The following tasks need to be complete before proceeding.
-These are "one-time tasks" which may already have been completed.
-
-1. The following software programs need to be installed:
-    1. [git](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-git.md)
-    1. [make](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-make.md)
-    1. [docker](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-docker.md)
-
-### Clone repository
-
-For more information on environment variables,
-see [Environment Variables](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md).
-
-1. Set these environment variable values:
-
-    ```console
-    export GIT_ACCOUNT=senzing
-    export GIT_REPOSITORY=docker-xterm
-    export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
-    export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
-    ```
-
-1. Using the environment variables values just set, follow steps in [clone-repository](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/clone-repository.md) to install the Git repository.
-
-### Build Docker image
-
-1. **Option #1:** Using `docker` command and GitHub.
-
-    ```console
-    sudo docker build \
-      --tag senzing/xterm \
-      https://github.com/senzing/docker-xterm.git#main
-    ```
-
-1. **Option #2:** Using `docker` command and local repository.
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}
-    sudo docker build --tag senzing/xterm .
-    ```
-
-1. **Option #3:** Using `make` command.
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}
-    sudo make docker-build
-    ```
-
-    Note: `sudo make docker-build-development-cache` can be used to create cached Docker layers.
-
 ## Examples
 
 ### Examples of Docker
@@ -318,11 +249,11 @@ Configuration values specified by environment variable or command line parameter
 - **[SENZING_RUNAS_USER](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_runas_user)**
 - **[SENZING_VAR_DIR](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_var_dir)**
 
-## Errors
-
-1. See [docs/errors.md](docs/errors.md).
-
 ## References
+
+- [Development](docs/development.md)
+- [Errors](docs/errors.md)
+- [Examples](docs/examples.md)
 
 ## License
 
