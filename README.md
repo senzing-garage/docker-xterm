@@ -63,7 +63,6 @@ The web-based Senzing X-term can be used to run Senzing command-line programs.
    Senzing X-term will be viewable at
    [localhost:8254](http://localhost:8254).
 
-
 1. In general, visit the web address having the following format:
    `http://${SENZING_XTERM_HOST}:${SENZING_XTERM_PORT}`
    Example:
