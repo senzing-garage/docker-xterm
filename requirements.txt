@@ -1,6 +1,6 @@
 csvkit==1.1.1
 Flask-SocketIO==5.3.3
-Flask==2.2.3
+Flask==2.3.1
 orjson==3.8.10
 pandas==2.0.1
 prettytable==3.7.0
