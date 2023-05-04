@@ -19,7 +19,6 @@ To access files outside of the container, files should be place on volumes mount
 
 1. [Expectations](#expectations)
 1. [Use](#use)
-1. [Related artifacts](#related-artifacts)
 1. [References](#references)
 1. [License](#license)
 
@@ -34,7 +33,7 @@ To access files outside of the container, files should be place on volumes mount
 
 ### Prerequisites
 
-1. [docker](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-docker.md)
+1. [docker](https://github.com/Senzing/knowledge-base/blob/main/WHATIS/docker.md)
 
 ### Run Docker container
 
@@ -78,17 +77,6 @@ The web-based Senzing X-term can be used to run Senzing command-line programs.
    [additional tips](https://github.com/Senzing/knowledge-base/blob/main/lists/docker-compose-demo-tips.md#senzing-x-term)
    for working with Senzing X-Term.
 
-## Related artifacts
-
-1. [DockerHub](https://hub.docker.com/r/senzing/xterm)
-1. [Helm Chart](https://github.com/Senzing/charts/tree/main/charts/xterm)
-
-## References
-
-- [Development](docs/development.md)
-- [Errors](docs/errors.md)
-- [Examples](docs/examples.md)
-
 ## License
 
 View
@@ -109,3 +97,12 @@ along with any direct or indirect dependencies of the primary software being con
 As for any pre-built image usage,
 it is the image user's responsibility to ensure that any use of this image complies
 with any relevant licenses for all software contained within.
+
+## References
+
+- [Development](docs/development.md)
+- [Errors](docs/errors.md)
+- [Examples](docs/examples.md)
+- Related artifacts
+  - [DockerHub](https://hub.docker.com/r/senzing/xterm)
+  - [Helm Chart](https://github.com/Senzing/charts/tree/main/charts/xterm)
