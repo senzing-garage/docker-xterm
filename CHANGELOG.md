@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [1.4.10] - 2023-06-15
+
+### Changed in 1.4.10
+
+- In `Dockerfile`, updated FROM instruction to `senzing/senzingapi-tools:3.5.3`
+- In `requirements.txt`, updated:
+  - orjson==3.9.1
+  - pandas==2.0.2
+  - prettytable==3.8.0
+  - setuptools==67.8.0
+
 ## [1.4.9] - 2023-05-00
 
 ### Changed in 1.4.9
