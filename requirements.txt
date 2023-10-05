@@ -1,4 +1,4 @@
-csvkit==1.1.1
+csvkit==1.2.0
 Flask-SocketIO==5.3.6
 Flask==3.0.0
 orjson==3.9.7
