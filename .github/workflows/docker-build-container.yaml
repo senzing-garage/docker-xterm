@@ -1,10 +1,6 @@
 name: docker-build-container.yaml
 
-on:
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+on: [push]
 
 jobs:
   docker-build-container:
