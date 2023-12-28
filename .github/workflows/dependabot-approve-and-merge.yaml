@@ -1,10 +1,7 @@
----
 name: dependabot-approve-and-merge.yaml
-
 on:
   pull_request:
     branches: [main]
-
 jobs:
   dependabot-approve-and-merge:
     permissions:

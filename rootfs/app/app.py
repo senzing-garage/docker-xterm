@@ -31,7 +31,7 @@ __version__ = "1.4.7"  # See https://www.python.org/dev/peps/pep-0396/
 __date__ = '2020-04-26'
 __updated__ = '2023-04-03'
 
-SENZING_PRODUCT_ID = "5024"  # See https://github.com/Senzing/knowledge-base/blob/main/lists/senzing-product-ids.md
+SENZING_PRODUCT_ID = "5024"  # See https://github.com/senzing-garage/knowledge-base/blob/main/lists/senzing-product-ids.md
 LOG_FORMAT = '%(asctime)s %(message)s'
 
 # -----------------------------------------------------------------------------
@@ -285,7 +285,7 @@ def get_parser():
 
     parser = argparse.ArgumentParser(
         prog="xterm",
-        description="Web-based X-terminal. For more information, see https://github.com/Senzing/docker-xterm",
+        description="Web-based X-terminal. For more information, see https://github.com/senzing-garage/docker-xterm",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 

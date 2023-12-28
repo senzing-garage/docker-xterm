@@ -1,5 +1,17 @@
 # docker-xterm
 
+If you are beginning your journey with
+[Senzing](https://senzing.com/),
+please start with
+[Senzing Quick Start guides](https://docs.senzing.com/quickstart/).
+
+You are in the
+[Senzing Garage](https://github.com/senzing-garage)
+where projects are "tinkered" on.
+Although this GitHub repository may help you understand an approach to using Senzing,
+it's not considered to be "production ready" and is not considered to be part of the Senzing product.
+Heck, it may not even be appropriate for your application of Senzing!
+
 ## Synopsis
 
 A docker container that gives a web-based terminal.
@@ -27,13 +39,13 @@ To access files outside of the container, files should be place on volumes mount
 - **Space:** This repository and demonstration require 6 GB free disk space.
 - **Time:** Budget 20 minutes to get the demonstration up-and-running, depending on CPU and network speeds.
 - **Background knowledge:** This repository assumes a working knowledge of:
-  - [Docker](https://github.com/Senzing/knowledge-base/blob/main/WHATIS/docker.md)
+  - [Docker](https://github.com/senzing-garage/knowledge-base/blob/main/WHATIS/docker.md)
 
 ## Use
 
 ### Prerequisites
 
-1. [docker](https://github.com/Senzing/knowledge-base/blob/main/WHATIS/docker.md)
+1. [docker](https://github.com/senzing-garage/knowledge-base/blob/main/WHATIS/docker.md)
 
 ### Run Docker container
 
@@ -74,7 +86,7 @@ The web-based Senzing X-term can be used to run Senzing command-line programs.
    becomes `http://localhost:8254`.
 
 1. See
-   [additional tips](https://github.com/Senzing/knowledge-base/blob/main/lists/docker-compose-demo-tips.md#senzing-x-term)
+   [additional tips](https://github.com/senzing-garage/knowledge-base/blob/main/lists/docker-compose-demo-tips.md#senzing-x-term)
    for working with Senzing X-Term.
 
 ## License
@@ -85,7 +97,7 @@ for the software container in this Docker image.
 Note that this license does not permit further distribution.
 
 This Docker image may also contain software from the
-[Senzing GitHub community](https://github.com/Senzing/)
+[Senzing GitHub community](https://github.com/senzing-garage/)
 under the
 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
@@ -105,4 +117,4 @@ with any relevant licenses for all software contained within.
 - [Examples](docs/examples.md)
 - Related artifacts
   - [DockerHub](https://hub.docker.com/r/senzing/xterm)
-  - [Helm Chart](https://github.com/Senzing/charts/tree/main/charts/xterm)
+  - [Helm Chart](https://github.com/senzing-garage/charts/tree/main/charts/xterm)
