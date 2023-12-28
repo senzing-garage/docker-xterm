@@ -1,7 +1,9 @@
 name: docker-build-container.yaml
-
-on: [push]
-
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 jobs:
   docker-build-container:
     runs-on: ubuntu-latest

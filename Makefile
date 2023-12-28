@@ -22,7 +22,7 @@ default: help
 .PHONY: docker-build
 docker-build:
 	docker build \
-	    --tag $(DOCKER_IMAGE_NAME) \
+		--tag $(DOCKER_IMAGE_NAME) \
 		--tag $(DOCKER_IMAGE_NAME):$(GIT_VERSION) \
 		.
 
@@ -30,7 +30,7 @@ docker-build:
 docker-build-stage-1:
 	docker build \
 		--target builder \
-	    --tag $(DOCKER_IMAGE_NAME) \
+		--tag $(DOCKER_IMAGE_NAME) \
 		--tag $(DOCKER_IMAGE_NAME):$(GIT_VERSION) \
 		.
 
