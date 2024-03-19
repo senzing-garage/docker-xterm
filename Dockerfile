@@ -13,7 +13,7 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2024-03-18
+ENV REFRESHED_AT=2024-03-19
 
 # Run as "root" for system installation.
 
@@ -35,34 +35,64 @@ COPY package-lock.json /app/package-lock.json
 # Build js packages.
 
 RUN npm config set loglevel warn \
-  && npm install
+ && npm install
 
 # Install packages via apt for building fio.
 
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
-  && apt-get -y install \
-  gcc \
-  make \
-  pkg-config \
-  unzip \
-  wget \
-  && rm -rf /var/lib/apt/lists/*
+ && apt-get -y install \
+      gcc \
+      make \
+      pkg-config \
+      unzip \
+      wget \
+ && rm -rf /var/lib/apt/lists/*
 
 # Work around until Debian repos catch up to modern versions of fio.
 
 RUN mkdir /tmp/fio \
-  && cd /tmp/fio \
-  && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.30.zip \
-  && unzip fio-3.30.zip \
-  && cd fio-fio-3.30/ \
-  && ./configure \
-  && make \
-  && make install \
-  && fio --version \
-  && cd \
-  && rm -rf /tmp/fio
+ && cd /tmp/fio \
+ && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.30.zip \
+ && unzip fio-3.30.zip \
+ && cd fio-fio-3.30/ \
+ && ./configure \
+ && make \
+ && make install \
+ && fio --version \
+ && cd \
+ && rm -rf /tmp/fio
+
+# -----------------------------------------------------------------------------
+# Stage: python
+# -----------------------------------------------------------------------------
+
+# Create the runtime image.
+
+FROM ${BASE_IMAGE} AS python
+
+# Install packages via apt.
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update \
+ && apt-get -y install \
+      python3 \
+      python3-venv \
+ && rm -rf /var/lib/apt/lists/*
+
+# Create and activate virtual environment.
+
+RUN python3 -m venv /app/venv
+ENV PATH="/app/venv/bin:$PATH"
+
+# Install packages via PIP.
+
+COPY requirements.txt .
+RUN pip3 install --upgrade pip \
+ && pip3 install -r requirements.txt \
+ && rm requirements.txt
 
 # -----------------------------------------------------------------------------
 # Stage: Final
@@ -72,13 +102,15 @@ RUN mkdir /tmp/fio \
 
 FROM ${BASE_IMAGE} AS runner
 
+ENV REFRESHED_AT=2024-03-19
+
 ARG IMAGE_NAME
 ARG IMAGE_MAINTAINER
 ARG IMAGE_VERSION
 
 LABEL Name=${IMAGE_NAME} \
-  Maintainer=${IMAGE_MAINTAINER} \
-  Version=${IMAGE_VERSION}
+      Maintainer=${IMAGE_MAINTAINER} \
+      Version=${IMAGE_VERSION}
 
 # Define health check.
 
@@ -93,31 +125,23 @@ USER root
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
-  && apt-get -y install \
-  elvis-tiny \
-  htop \
-  iotop \
-  jq \
-  net-tools \
-  openssh-server \
-  postgresql-client \
-  procps \
-  python3-dev \
-  python3-pip \
-  python3-pyodbc \
-  strace \
-  tree \
-  unzip \
-  wget \
-  zip \
-  && rm -rf /var/lib/apt/lists/*
-
-# Install packages via pip.
-
-COPY requirements.txt .
-RUN pip3 install --upgrade pip \
-  && pip3 install -r requirements.txt \
-  && rm /requirements.txt
+ && apt-get -y install \
+      elvis-tiny \
+      htop \
+      iotop \
+      jq \
+      net-tools \
+      openssh-server \
+      postgresql-client \
+      procps \
+      python3-dev \
+      python3-pyodbc \
+      strace \
+      tree \
+      unzip \
+      wget \
+      zip \
+ && rm -rf /var/lib/apt/lists/*
 
 # Copy files from repository.
 
@@ -133,6 +157,7 @@ COPY --from=builder "/app/node_modules/xterm-addon-search/lib/*"               "
 COPY --from=builder "/app/node_modules/xterm-addon-web-links/lib/*"            "/app/static/js/"
 COPY --from=builder "/app/node_modules/xterm/css/xterm.css"                    "/app/static/css/"
 COPY --from=builder "/app/node_modules/xterm/lib/*"                            "/app/static/js/"
+COPY --from=python  "/app/venv"                                                "/app/venv"
 COPY --from=builder "/usr/local/bin/fio"                                       "/usr/local/bin/fio"
 
 # The port for the Flask is 5000.
@@ -143,10 +168,15 @@ EXPOSE 5000
 
 USER 1001
 
+# Activate virtual environment.
+
+ENV VIRTUAL_ENV=/app/venv
+ENV PATH="/app/venv/bin:${PATH}"
+
 # Runtime environment variables.
 
 ENV LC_CTYPE=C.UTF-8 \
-  SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
+    SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
 
 # Runtime execution.
 
