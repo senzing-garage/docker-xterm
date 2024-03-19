@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [1.4.15] - 2024-03-19
+
+### Changed in 1.4.15
+
+- In `Dockerfile`, fix python `pip` installs
+
 ## [1.4.14] - 2024-03-18
 
 ### Changed in 1.4.14
