@@ -3,7 +3,7 @@ ARG BASE_BUILDER_IMAGE=node:lts-buster-slim
 
 ARG IMAGE_NAME="senzing/xterm"
 ARG IMAGE_MAINTAINER="support@senzing.com"
-ARG IMAGE_VERSION="1.4.14"
+ARG IMAGE_VERSION="1.4.16"
 
 # -----------------------------------------------------------------------------
 # Stage: builder
@@ -35,34 +35,34 @@ COPY package-lock.json /app/package-lock.json
 # Build js packages.
 
 RUN npm config set loglevel warn \
- && npm install
+  && npm install
 
 # Install packages via apt for building fio.
 
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
- && apt-get -y install \
-      gcc \
-      make \
-      pkg-config \
-      unzip \
-      wget \
- && rm -rf /var/lib/apt/lists/*
+  && apt-get -y install \
+  gcc \
+  make \
+  pkg-config \
+  unzip \
+  wget \
+  && rm -rf /var/lib/apt/lists/*
 
 # Work around until Debian repos catch up to modern versions of fio.
 
 RUN mkdir /tmp/fio \
- && cd /tmp/fio \
- && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.30.zip \
- && unzip fio-3.30.zip \
- && cd fio-fio-3.30/ \
- && ./configure \
- && make \
- && make install \
- && fio --version \
- && cd \
- && rm -rf /tmp/fio
+  && cd /tmp/fio \
+  && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.30.zip \
+  && unzip fio-3.30.zip \
+  && cd fio-fio-3.30/ \
+  && ./configure \
+  && make \
+  && make install \
+  && fio --version \
+  && cd \
+  && rm -rf /tmp/fio
 
 # -----------------------------------------------------------------------------
 # Stage: python
@@ -77,10 +77,10 @@ FROM ${BASE_IMAGE} AS python
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
- && apt-get -y install \
-      python3 \
-      python3-venv \
- && rm -rf /var/lib/apt/lists/*
+  && apt-get -y install \
+  python3 \
+  python3-venv \
+  && rm -rf /var/lib/apt/lists/*
 
 # Create and activate virtual environment.
 
@@ -91,8 +91,8 @@ ENV PATH="/app/venv/bin:$PATH"
 
 COPY requirements.txt .
 RUN pip3 install --upgrade pip \
- && pip3 install -r requirements.txt \
- && rm requirements.txt
+  && pip3 install -r requirements.txt \
+  && rm requirements.txt
 
 # -----------------------------------------------------------------------------
 # Stage: Final
@@ -109,8 +109,8 @@ ARG IMAGE_MAINTAINER
 ARG IMAGE_VERSION
 
 LABEL Name=${IMAGE_NAME} \
-      Maintainer=${IMAGE_MAINTAINER} \
-      Version=${IMAGE_VERSION}
+  Maintainer=${IMAGE_MAINTAINER} \
+  Version=${IMAGE_VERSION}
 
 # Define health check.
 
@@ -125,23 +125,23 @@ USER root
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
- && apt-get -y install \
-      elvis-tiny \
-      htop \
-      iotop \
-      jq \
-      net-tools \
-      openssh-server \
-      postgresql-client \
-      procps \
-      python3-dev \
-      python3-pyodbc \
-      strace \
-      tree \
-      unzip \
-      wget \
-      zip \
- && rm -rf /var/lib/apt/lists/*
+  && apt-get -y install \
+  elvis-tiny \
+  htop \
+  iotop \
+  jq \
+  net-tools \
+  openssh-server \
+  postgresql-client \
+  procps \
+  python3-dev \
+  python3-pyodbc \
+  strace \
+  tree \
+  unzip \
+  wget \
+  zip \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy files from repository.
 
@@ -176,7 +176,7 @@ ENV PATH="/app/venv/bin:${PATH}"
 # Runtime environment variables.
 
 ENV LC_CTYPE=C.UTF-8 \
-    SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
+  SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
 
 # Runtime execution.
 
