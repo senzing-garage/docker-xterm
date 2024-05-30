@@ -14,7 +14,7 @@ jobs:
       AWS_DOCKER_ACCOUNT_ID: ${{ secrets.AWS_DOCKER_ACCOUNT_ID }}
       DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-    uses: senzing-factory/build-resources/.github/workflows/docker-push-containers-to-dockerhub-and-ecr.yaml@v1
+    uses: senzing-factory/build-resources/.github/workflows/docker-push-containers-to-dockerhub-and-ecr.yaml@v2
     with:
       build-options: "--push"
       docker-image-repository: senzing/xterm
