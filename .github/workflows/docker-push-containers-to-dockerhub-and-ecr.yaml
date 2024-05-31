@@ -5,6 +5,9 @@ on:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
 
+permissions:
+  contents: read
+
 jobs:
   docker-push-containers-to-dockerhub-and-ecr:
     permissions:
