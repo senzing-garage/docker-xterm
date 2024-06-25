@@ -72,6 +72,10 @@ RUN mkdir /tmp/fio \
 
 FROM ${BASE_IMAGE} AS python
 
+# Run as "root" for system installation.
+
+USER root
+
 # Install packages via apt.
 
 ENV DEBIAN_FRONTEND noninteractive
