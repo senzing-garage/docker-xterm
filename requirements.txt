@@ -3,7 +3,7 @@ Flask-SocketIO==5.3.6
 Flask==3.0.3
 orjson==3.10.6
 pandas==2.2.2
-prettytable==3.10.0
+prettytable==3.10.2
 PySnooper==1.2.0
 python-engineio==4.9.1
 python-socketio==5.11.3
