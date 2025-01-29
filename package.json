@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "socket.io-client": "4.8.1",
-    "xterm": "4.13.0",
-    "xterm-addon-attach": "0.6.0",
-    "xterm-addon-fit": "0.5.0",
-    "xterm-addon-search": "0.8.0",
-    "xterm-addon-web-links": "0.4.0"
+    "xterm": "5.0.0",
+    "xterm-addon-attach": "0.9.0",
+    "xterm-addon-fit": "0.8.0",
+    "xterm-addon-search": "0.13.0",
+    "xterm-addon-web-links": "0.9.0"
   },
   "devDependencies": {
     "webpack": "5.95.0",
@@ -15,5 +15,5 @@
   "main": "senzing-xterm.js",
   "name": "senzing-xterm",
   "repository": "https://github.com/xtermjs/xterm.js",
-  "version": "1.4.12"
+  "version": "1.4.17"
 }
