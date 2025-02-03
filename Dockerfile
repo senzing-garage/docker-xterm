@@ -57,9 +57,15 @@ RUN mkdir /tmp/fio \
  && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.38.zip \
  && unzip fio-3.38.zip \
  && cd fio-fio-3.38/ \
- && ./configure \
- && make \
- && make install \
+ && ./configure
+
+RUN cd /tmp/fio \
+ && make
+
+RUN cd /tmp/fio \
+ && make install
+
+RUN cd /tmp/fio \
  && fio --version \
  && cd \
  && rm -rf /tmp/fio
