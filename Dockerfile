@@ -55,8 +55,11 @@ RUN apt-get update \
 RUN mkdir /tmp/fio \
  && cd /tmp/fio \
  && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.38.zip \
- && unzip fio-3.38.zip \
- && cd fio-fio-3.38/ \
+ && unzip fio-3.38.zip
+
+RUN ls -la
+
+RUN cd /tmp/fio/fio-fio-3.38/ \
  && ./configure
 
 RUN cd /tmp/fio/fio-fio-3.38/ \
