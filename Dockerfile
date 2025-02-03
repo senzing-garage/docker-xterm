@@ -59,13 +59,13 @@ RUN mkdir /tmp/fio \
  && cd fio-fio-3.38/ \
  && ./configure
 
-RUN cd /tmp/fio \
+RUN cd /tmp/fio/fio-fio-3.38/ \
  && make
 
-RUN cd /tmp/fio \
+RUN cd /tmp/fio/fio-fio-3.38/ \
  && make install
 
-RUN cd /tmp/fio \
+RUN cd /tmp/fio/fio-fio-3.38/ \
  && fio --version \
  && cd \
  && rm -rf /tmp/fio
