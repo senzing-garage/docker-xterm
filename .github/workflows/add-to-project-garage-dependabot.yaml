@@ -1,4 +1,4 @@
-name: add to project garage dependabot
+name: Add to project garage dependabot
 
 on:
   pull_request:
