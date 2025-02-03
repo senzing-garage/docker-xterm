@@ -37,42 +37,6 @@ COPY package-lock.json /app/package-lock.json
 RUN npm config set loglevel warn \
  && npm install
 
-# Install packages via apt for building fio.
-
-#ENV DEBIAN_FRONTEND noninteractive
-
-#RUN apt-get update \
-# && apt-get -y install \
-#      gcc \
-#      make \
-#      pkg-config \
-#      unzip \
-#      wget \
-# && rm -rf /var/lib/apt/lists/*
-
-# Work around until Debian repos catch up to modern versions of fio.
-
-#RUN mkdir /tmp/fio \
-# && cd /tmp/fio \
-# && wget https://github.com/axboe/fio/archive/refs/tags/fio-3.38.zip \
-# && unzip fio-3.38.zip
-
-#RUN ls -la
-
-#RUN cd /tmp/fio/fio-fio-3.38/ \
-# && ./configure
-
-#RUN cd /tmp/fio/fio-fio-3.38/ \
-# && make
-
-#RUN cd /tmp/fio/fio-fio-3.38/ \
-# && make install
-
-#RUN cd /tmp/fio/fio-fio-3.38/ \
-# && fio --version \
-# && cd \
-# && rm -rf /tmp/fio
-
 # -----------------------------------------------------------------------------
 # Stage: python
 # -----------------------------------------------------------------------------
@@ -172,7 +136,6 @@ COPY --from=builder "/app/node_modules/xterm-addon-web-links/lib/*"            "
 COPY --from=builder "/app/node_modules/xterm/css/xterm.css"                    "/app/static/css/"
 COPY --from=builder "/app/node_modules/xterm/lib/*"                            "/app/static/js/"
 COPY --from=python  "/app/venv"                                                "/app/venv"
-# COPY --from=builder "/usr/local/bin/fio"                                       "/usr/local/bin/fio"
 
 # The port for the Flask is 5000.
 
