@@ -1,4 +1,4 @@
-name: docker build container
+name: Docker build container
 
 on:
   pull_request:
@@ -14,9 +14,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: build docker image
+      - name: Get repository name
+        id: repo-basename
+        run: |
+          echo "repo=$(basename ${{ github.repository }})" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Build docker image
         uses: senzing-factory/github-action-docker-buildx-build@v1
         with:
-          image-repository: senzing/xterm
+          image-repository: senzing/${{ steps.repo-basename.outputs.repo }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
