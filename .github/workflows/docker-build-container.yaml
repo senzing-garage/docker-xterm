@@ -21,7 +21,7 @@ jobs:
         shell: bash
 
       - name: Build docker image
-        uses: senzing-factory/github-action-docker-buildx-build@v1
+        uses: senzing-factory/github-action-docker-buildx-build@v2
         with:
           image-repository: senzing/${{ steps.repo-basename.outputs.repo }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
