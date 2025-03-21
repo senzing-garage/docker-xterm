@@ -35,7 +35,7 @@ COPY package-lock.json /app/package-lock.json
 # Build js packages.
 
 RUN npm config set loglevel warn \
-  && npm install
+ && npm install
 
 # -----------------------------------------------------------------------------
 # Stage: python
@@ -54,10 +54,10 @@ USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-  && apt-get -y install \
-  python3 \
-  python3-venv \
-  && rm -rf /var/lib/apt/lists/*
+ && apt-get -y install \
+      python3 \
+      python3-venv \
+ && rm -rf /var/lib/apt/lists/*
 
 # Create and activate virtual environment.
 
@@ -68,8 +68,8 @@ ENV PATH="/app/venv/bin:$PATH"
 
 COPY requirements.txt .
 RUN pip3 install --upgrade pip \
-  && pip3 install -r requirements.txt \
-  && rm requirements.txt
+ && pip3 install -r requirements.txt \
+ && rm requirements.txt
 
 # -----------------------------------------------------------------------------
 # Stage: Final
@@ -86,8 +86,8 @@ ARG IMAGE_MAINTAINER
 ARG IMAGE_VERSION
 
 LABEL Name=${IMAGE_NAME} \
-  Maintainer=${IMAGE_MAINTAINER} \
-  Version=${IMAGE_VERSION}
+      Maintainer=${IMAGE_MAINTAINER} \
+      Version=${IMAGE_VERSION}
 
 # Define health check.
 
@@ -102,24 +102,24 @@ USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-  && apt-get -y install \
-  elvis-tiny \
-  fio \
-  htop \
-  iotop \
-  jq \
-  net-tools \
-  openssh-server \
-  postgresql-client \
-  procps \
-  python3-dev \
-  python3-pyodbc \
-  strace \
-  tree \
-  unzip \
-  wget \
-  zip \
-  && rm -rf /var/lib/apt/lists/*
+ && apt-get -y install \
+      elvis-tiny \
+      fio \
+      htop \
+      iotop \
+      jq \
+      net-tools \
+      openssh-server \
+      postgresql-client \
+      procps \
+      python3-dev \
+      python3-pyodbc \
+      strace \
+      tree \
+      unzip \
+      wget \
+      zip \
+ && rm -rf /var/lib/apt/lists/*
 
 # Copy files from repository.
 
@@ -153,7 +153,7 @@ ENV PATH="/app/venv/bin:${PATH}"
 # Runtime environment variables.
 
 ENV LC_CTYPE=C.UTF-8 \
-  SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
+    SENZING_SSHD_SHOW_PERFORMANCE_WARNING=true
 
 # Runtime execution.
 
