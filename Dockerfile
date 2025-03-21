@@ -25,7 +25,7 @@ WORKDIR /app
 
 # Add `/app/node_modules/.bin` to $PATH
 
-ENV PATH /app/node_modules/.bin:$PATH
+ENV PATH=/app/node_modules/.bin:$PATH
 
 # Install and cache app dependencies.
 
@@ -51,7 +51,7 @@ USER root
 
 # Install packages via apt.
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
  && apt-get -y install \
@@ -99,7 +99,7 @@ USER root
 
 # Install packages via apt.
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
  && apt-get -y install \

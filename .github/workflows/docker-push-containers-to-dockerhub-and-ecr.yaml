@@ -10,17 +10,17 @@ permissions:
 
 jobs:
   docker-push-containers-to-dockerhub-and-ecr:
-    permissions:
-      id-token: write   # This is required for requesting the JWT
-      contents: read    # This is required for actions/checkout
-    secrets:
-      AWS_DOCKER_ACCOUNT_ID: ${{ secrets.AWS_DOCKER_ACCOUNT_ID }}
-      DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-    uses: senzing-factory/build-resources/.github/workflows/docker-push-containers-to-dockerhub-and-ecr.yaml@v2
-    with:
-      build-options: "--push"
-      docker-image-repository: senzing/xterm
-      ecr-image-repository: senzing/xterm
-      image-tag: ${{ github.ref_name }}
-      platforms: "linux/amd64,linux/arm64"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build docker image and push to DockerHub
+        uses: senzing-factory/github-action-docker-buildx-build@v2
+        with:
+          image-repository: senzing/xterm
+          image-tag: ${{ github.ref_name }}
+          login-to-ecr: true
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+          push: true
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_DOCKER_ACCOUNT_ID }}:role/github-actions-ecr-push
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
