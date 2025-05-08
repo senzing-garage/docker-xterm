@@ -129,4 +129,8 @@ dmypy.json
 
 node_modules
 
+# Visual Studio code
+.vscode/*
+!.vscode/cspell.json
+*.code-workspace
 .history
