@@ -1,0 +1,53 @@
+{
+  // Version of the setting file.  Always 0.2
+  "version": "0.2",
+  // language - current active spelling language
+  "language": "en",
+  // words - list of words to be always considered correct
+  "words": [
+      "alnum",
+      "Analysing",
+      "buildx",
+      "CCLA",
+      "CODEOWNER",
+      "csvkit",
+      "CTYPE",
+      "dockerhub",
+      "engineio",
+      "ICLA",
+      "iotop",
+      "libcrypto",
+      "libpq",
+      "loglevel",
+      "noninteractive",
+      "ODBCSYSINI",
+      "orjson",
+      "prettytable",
+      "procps",
+      "psycopg",
+      "pydev",
+      "pydevproject",
+      "pylint",
+      "pyodbc",
+      "rootfs",
+      "scrollback",
+      "Senzing",
+      "senzingapi",
+      "setuptools",
+      "shellcheck",
+      "socketio",
+      "stackoverflow",
+      "TIOCSWINSZ",
+      "toplevel",
+      "Toscreen",
+      "venv",
+      "Visi",
+      "winsize",
+      "xpix",
+      "ypix"
+    ],
+  "ignorePaths": [
+    ".git/**",
+    ".gitignore"
+  ]
+}
