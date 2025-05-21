@@ -6,5 +6,5 @@ prettytable==3.16.0
 PySnooper==1.2.2
 python-engineio==4.12.1
 python-socketio==5.13.0
-setuptools==80.7.1
+setuptools==80.8.0
 VisiData==3.1.1
