@@ -3,7 +3,7 @@ Flask==3.1.1
 orjson==3.10.18
 pandas==2.2.3
 prettytable==3.16.0
-PySnooper==1.2.2
+PySnooper==1.2.3
 python-engineio==4.12.1
 python-socketio==5.13.0
 setuptools==80.9.0
