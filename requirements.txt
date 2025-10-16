@@ -5,6 +5,6 @@ pandas==2.3.3
 prettytable==3.16.0
 PySnooper==1.2.3
 python-engineio==4.12.3
-python-socketio==5.14.1
+python-socketio==5.14.2
 setuptools==80.9.0
 VisiData==3.3
