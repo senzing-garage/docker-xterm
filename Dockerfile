@@ -103,7 +103,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
  && apt-get -y --no-install-recommends install \
-      elvis-tiny \
       fio \
       htop \
       iotop \
