@@ -1,6 +1,6 @@
 Flask-SocketIO==5.5.1
 Flask==3.1.2
-orjson==3.11.4
+orjson==3.11.5
 pandas==2.3.3
 prettytable==3.16.0; python_version < '3.10'
 prettytable==3.17.0; python_version > '3.9'
