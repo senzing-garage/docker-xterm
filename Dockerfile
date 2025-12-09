@@ -1,5 +1,5 @@
 ARG BASE_IMAGE=senzing/senzingapi-tools:3.13.0@sha256:9ed9399ffa9003e9e32f94b26cc46a46d629efaec60457f60be8a5109eb9c9cb
-ARG BASE_BUILDER_IMAGE=node:lts-bookworm-slim@sha256:0afb7822fac7bf9d7c1bf3b6e6c496dee6b2b64d8dfa365501a3c68e8eba94b2
+ARG BASE_BUILDER_IMAGE=node:lts-bookworm-slim@sha256:faeceb0f73551bad0ca8ac8a4bab395f610d2b53edc797f5716c707ba91b1334
 
 ARG IMAGE_NAME="senzing/xterm"
 ARG IMAGE_MAINTAINER="support@senzing.com"
