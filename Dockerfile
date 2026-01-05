@@ -13,7 +13,7 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2025-02-03
+ENV REFRESHED_AT=2026-01-05
 
 # Run as "root" for system installation.
 
@@ -79,7 +79,7 @@ RUN pip3 install --upgrade pip \
 
 FROM ${BASE_IMAGE} AS runner
 
-ENV REFRESHED_AT=2025-02-03
+ENV REFRESHED_AT=2026-01-05
 
 ARG IMAGE_NAME
 ARG IMAGE_MAINTAINER
