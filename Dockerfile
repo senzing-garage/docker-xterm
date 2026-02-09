@@ -1,5 +1,5 @@
-ARG BASE_IMAGE=senzing/senzingapi-tools:3.13.0@sha256:9ed9399ffa9003e9e32f94b26cc46a46d629efaec60457f60be8a5109eb9c9cb
-ARG BASE_BUILDER_IMAGE=node:lts-bookworm-slim@sha256:bf22df20270b654c4e9da59d8d4a3516cce6ba2852e159b27288d645b7a7eedc
+ARG BASE_IMAGE=senzing/senzingapi-tools:3.13.0@sha256:9a4a8d614428259a30dd13539eb56da929be1b2049b60058a8979a93bcb1a941
+ARG BASE_BUILDER_IMAGE=node:lts-bookworm-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f
 
 ARG IMAGE_NAME="senzing/xterm"
 ARG IMAGE_MAINTAINER="support@senzing.com"
@@ -13,7 +13,7 @@ FROM ${BASE_BUILDER_IMAGE} AS builder
 
 # Set Shell to use for RUN commands in builder step.
 
-ENV REFRESHED_AT=2026-01-05
+ENV REFRESHED_AT=2026-02-09
 
 # Run as "root" for system installation.
 
@@ -79,7 +79,7 @@ RUN pip3 install --upgrade pip \
 
 FROM ${BASE_IMAGE} AS runner
 
-ENV REFRESHED_AT=2026-01-05
+ENV REFRESHED_AT=2026-02-09
 
 ARG IMAGE_NAME
 ARG IMAGE_MAINTAINER
