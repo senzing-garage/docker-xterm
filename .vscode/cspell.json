@@ -4,6 +4,7 @@
   "words": [
     "alnum",
     "Analysing",
+    "arawinters",
     "buildx",
     "CCLA",
     "CODEOWNER",
@@ -12,10 +13,12 @@
     "CTYPE",
     "dockerfiles",
     "dockerhub",
+    "docktermj",
     "engineio",
     "esbenp",
     "ICLA",
     "iotop",
+    "kernelsam",
     "libcrypto",
     "libpq",
     "loglevel",
@@ -46,5 +49,8 @@
     "xpix",
     "ypix"
   ],
-  "ignorePaths": [".git/**", ".gitignore"]
+  "ignorePaths": [
+    ".git/**",
+    ".gitignore"
+  ]
 }
