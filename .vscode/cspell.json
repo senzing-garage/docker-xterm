@@ -49,8 +49,5 @@
     "xpix",
     "ypix"
   ],
-  "ignorePaths": [
-    ".git/**",
-    ".gitignore"
-  ]
+  "ignorePaths": [".git/**", ".gitignore"]
 }
