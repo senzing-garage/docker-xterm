@@ -7,5 +7,5 @@ prettytable==3.17.0; python_version > '3.9'
 PySnooper==1.2.3
 python-engineio==4.13.1
 python-socketio==5.16.1
-setuptools==80.10.2
+setuptools==82.0.0
 VisiData==3.3
